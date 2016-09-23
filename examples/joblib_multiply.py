@@ -2,7 +2,7 @@
 
 import numpy as np
 from joblib import Memory
-from joblib_store import register_s3_store_backend
+from joblibstore import register_s3_store_backend
 
 if __name__ == '__main__':
     register_s3_store_backend()
