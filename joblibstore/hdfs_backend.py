@@ -18,6 +18,10 @@ class HDFSStoreBackend(StoreBackendBase, StoreManagerMixin):
         """Create object location on store"""
         self._mkdirp(location)
 
+    def get_cache_items(self):
+        """Returns the whole list of items available in cache."""
+        return []
+
     def configure(self, location, host=None, port=None, user=None,
                   ticket_cache=None, token=None, pars=None, connect=True,
                   **kwargs):

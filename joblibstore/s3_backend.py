@@ -18,6 +18,10 @@ class S3StoreBackend(StoreBackendBase, StoreManagerMixin):
         """Create object location on store"""
         self._mkdirp(location)
 
+    def get_cache_items(self):
+        """Returns the whole list of items available in cache."""
+        return []
+
     def configure(self, location,
                   anon=False, key=None, secret=None, token=None, use_ssl=True,
                   **kwargs):
