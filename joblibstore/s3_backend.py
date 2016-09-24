@@ -10,10 +10,6 @@ from joblib._store_backends import StoreBackendBase, StoreManagerMixin
 class S3StoreBackend(StoreBackendBase, StoreManagerMixin):
     """A StoreBackend for S3 cloud storage file system."""
 
-    def exists(self, obj):
-        """Check if object exists in store."""
-        return self.fs.exists(obj)
-
     def clear_location(self, location):
         """Check if object exists in store."""
         self.fs.rm(location, recursive=True)
@@ -36,7 +32,9 @@ class S3StoreBackend(StoreBackendBase, StoreManagerMixin):
         elif isinstance(location, S3StoreBackend):
             self.cachedir = location.cachedir
 
-        self.open = self.fs.open
+        # attach required methods using monkey patching trick.
+        self.open_object = self.fs.open
+        self.object_exists = self.fs.exists
 
         # computation results can be stored compressed for faster I/O
         self.compress = (False if 'compress' not in kwargs
