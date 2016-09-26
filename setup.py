@@ -12,7 +12,9 @@ if __name__ == '__main__':
           platforms='any',
           packages=['joblibstore'],
           install_requires=[
-            's3fs', 'apache-libcloud',
+            'joblib>=0.10',
+            's3fs>=0.0.7',
+            'apache-libcloud>=1.2.1',
           ],
           zip_safe=False,
           )
