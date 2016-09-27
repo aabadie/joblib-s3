@@ -7,8 +7,9 @@ from joblibstore import register_hdfs_store_backend
 if __name__ == '__main__':
     register_hdfs_store_backend()
 
-    mem = Memory('hdfs://joblib-aa/joblib_cache', host='hdfs.host.com',
-                 port=8020, user='login', verbose=100, compress=True)
+    mem = Memory(location='joblib_cache_hdfs',
+                 backend='hdfs', host='hdfs.host.com', port=8020, user='login',
+                 verbose=100, compress=True)
 
     multiply = mem.cache(np.multiply)
     array1 = np.arange(10000)

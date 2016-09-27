@@ -1,6 +1,6 @@
 import warnings
 
-from .backends import register_s3_store_backend
+from .backends import register_s3fs_store_backend
 try:
     from .backends import register_hdfs_store_backend
 except ImportError:
@@ -8,7 +8,7 @@ except ImportError:
     warnings.warn("libhdfs3 was not found on the system, cannot register"
                   "'register_hdfs_store_backend function.'")
 
-__all__ = ['register_s3_store_backend']
+__all__ = ['register_s3fs_store_backend']
 
 
 if register_hdfs_store_backend is not None:

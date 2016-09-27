@@ -7,7 +7,7 @@ from joblib._compat import _basestring
 from joblib._store_backends import StoreBackendBase, StoreManagerMixin
 
 
-class S3StoreBackend(StoreBackendBase, StoreManagerMixin):
+class S3FSStoreBackend(StoreBackendBase, StoreManagerMixin):
     """A StoreBackend for S3 cloud storage file system."""
 
     def clear_location(self, location):
@@ -22,7 +22,7 @@ class S3StoreBackend(StoreBackendBase, StoreManagerMixin):
         """Returns the whole list of items available in cache."""
         return []
 
-    def configure(self, location,
+    def configure(self, location, bucket=None,
                   anon=False, key=None, secret=None, token=None, use_ssl=True,
                   **kwargs):
         """Configure the store backend."""
@@ -30,10 +30,20 @@ class S3StoreBackend(StoreBackendBase, StoreManagerMixin):
                                     token=token, use_ssl=True)
 
         if isinstance(location, _basestring):
-            self.cachedir = os.path.join(location, 'joblib')
-            self.fs.mkdir(location)
-            self.fs.mkdir(self.cachedir)
-        elif isinstance(location, S3StoreBackend):
+            if bucket is None:
+                raise ValueError("No valid S3 bucket set")
+
+            # Ensure the given bucket exists.
+            root_bucket = os.path.join("s3://", bucket)
+            if not self.fs.exists(root_bucket):
+                self.fs.mkdir(root_bucket)
+
+            if location.startswith('/'):
+                location.replace('/', '')
+            self.cachedir = os.path.join(root_bucket, location, 'joblib')
+            if not self.fs.exists(self.cachedir):
+                self.fs.mkdir(self.cachedir)
+        elif isinstance(location, S3FSStoreBackend):
             self.cachedir = location.cachedir
 
         # attach required methods using monkey patching trick.
