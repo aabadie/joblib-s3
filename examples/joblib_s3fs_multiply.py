@@ -9,9 +9,8 @@ if __name__ == '__main__':
 
     # we assume you S3 credentials are stored in ~/.aws/credentials, so no
     # need to pass them to Memory constructor (even if it's possible).
-    mem = Memory(location='joblib_cache_s3', backend='s3fs',
-                 verbose=100, compress=True,
-                 bucket='joblib-aa')
+    mem = Memory(location='joblib_cache_s3', backend='s3fs', verbose=100,
+                 compress=True, bucket='joblib-aa')
 
     multiply = mem.cache(np.multiply)
     array1 = np.arange(10000)
