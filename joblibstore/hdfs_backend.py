@@ -57,10 +57,7 @@ class HDFSStoreBackend(StoreBackendBase, StoreManagerMixin):
     def _mkdirp(self, directory):
         """Recursively create a directory on the S3 store."""
 
-        if directory.startswith(self.cachedir):
-            directory = directory.replace(self.cachedir + '/', "")
-
-        current_path = self.cachedir
+        current_path = "" 
         for sub_dir in directory.split('/'):
             current_path = os.path.join(current_path, sub_dir)
             self.fs.mkdir(current_path)
