@@ -1,6 +1,5 @@
-"""Joblib storage backend for HDFS"""
+"""Joblib storage backend for HDFS."""
 
-import os.path
 import hdfs3
 import warnings
 from joblib._compat import _basestring
@@ -15,11 +14,11 @@ class HDFSStoreBackend(StoreBackendBase, StoreManagerMixin):
         self.fs.rm(location, recursive=True)
 
     def create_location(self, location):
-        """Create object location on store"""
+        """Create object location on store."""
         self._mkdirp(location)
 
     def get_cache_items(self):
-        """Returns the whole list of items available in cache."""
+        """Return the whole list of items available in cache."""
         return []
 
     def configure(self, location, host=None, port=None, user=None,
@@ -33,7 +32,7 @@ class HDFSStoreBackend(StoreBackendBase, StoreManagerMixin):
         if isinstance(location, _basestring):
             if location.startswith('/'):
                 location.replace('/', '')
-            self.cachedir = os.path.join(location, 'joblib')
+            self.cachedir = self.join_path(location, 'joblib')
             self.fs.mkdir(self.cachedir)
         elif isinstance(location, HDFSStoreBackend):
             self.cachedir = location.cachedir
@@ -55,9 +54,8 @@ class HDFSStoreBackend(StoreBackendBase, StoreManagerMixin):
         self.mmap_mode = None
 
     def _mkdirp(self, directory):
-        """Recursively create a directory on the S3 store."""
-
-        current_path = "" 
+        """Create recursively a directory on the HDFS file system."""
+        current_path = ""
         for sub_dir in directory.split('/'):
-            current_path = os.path.join(current_path, sub_dir)
+            current_path = self.join_path(current_path, sub_dir)
             self.fs.mkdir(current_path)

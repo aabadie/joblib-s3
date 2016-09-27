@@ -1,6 +1,5 @@
-"""Joblib storage backend for S3"""
+"""Joblib storage backend for S3."""
 
-import os.path
 import s3fs
 import warnings
 from joblib._compat import _basestring
@@ -15,11 +14,11 @@ class S3FSStoreBackend(StoreBackendBase, StoreManagerMixin):
         self.fs.rm(location, recursive=True)
 
     def create_location(self, location):
-        """Create object location on store"""
+        """Create object location on store."""
         self._mkdirp(location)
 
     def get_cache_items(self):
-        """Returns the whole list of items available in cache."""
+        """Return the whole list of items available in cache."""
         return []
 
     def configure(self, location, bucket=None,
@@ -34,13 +33,13 @@ class S3FSStoreBackend(StoreBackendBase, StoreManagerMixin):
                 raise ValueError("No valid S3 bucket set")
 
             # Ensure the given bucket exists.
-            root_bucket = os.path.join("s3://", bucket)
+            root_bucket = self.join_path("s3://", bucket)
             if not self.fs.exists(root_bucket):
                 self.fs.mkdir(root_bucket)
 
             if location.startswith('/'):
                 location.replace('/', '')
-            self.cachedir = os.path.join(root_bucket, location, 'joblib')
+            self.cachedir = self.join_path(root_bucket, location, 'joblib')
             if not self.fs.exists(self.cachedir):
                 self.fs.mkdir(self.cachedir)
         elif isinstance(location, S3FSStoreBackend):
@@ -63,12 +62,13 @@ class S3FSStoreBackend(StoreBackendBase, StoreManagerMixin):
         self.mmap_mode = None
 
     def _mkdirp(self, directory):
-        """Recursively create a directory on the S3 store."""
-
+        """Create recursively a directory on the S3 store."""
+        # remove root cachedir from input directory to create as it should
+        # have already been created in the configure function.
         if directory.startswith(self.cachedir):
             directory = directory.replace(self.cachedir + '/', "")
 
         current_path = self.cachedir
         for sub_dir in directory.split('/'):
-            current_path = os.path.join(current_path, sub_dir)
+            current_path = self.join_path(current_path, sub_dir)
             self.fs.mkdir(current_path)
