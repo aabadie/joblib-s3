@@ -18,7 +18,7 @@ Getting the latest code
 
 To get the latest code using git, simply type::
 
-    git clone git://github.com/aabadie/joblib-store.git
+    git clone git://github.com/aabadie/joblibstore.git
 
 
 Using joblib-store to cache result
@@ -32,7 +32,7 @@ storage. This backend relies on `boto3
 Here is an example of joblib cache usage with the S3 store backend provided by
 joblib-store:
 
-::
+..  code-block:: python
 
     # Import the required packages
     import numpy as np
@@ -53,3 +53,5 @@ joblib-store:
 
         result = multiply(array1, array2)
         print(result)
+
+
