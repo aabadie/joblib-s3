@@ -44,7 +44,7 @@ joblib-store:
 
         # we assume you S3 credentials are stored in ~/.aws/credentials, so no
         # need to pass them to Memory constructor.
-        mem = Memory('s3://<your_bucker>/joblib_cache', verbose=100,
+        mem = Memory('joblib_cache', backend='s3', bucket='<my_bucket>', verbose=100,
                      compress=True)
 
         multiply = mem.cache(np.multiply)
