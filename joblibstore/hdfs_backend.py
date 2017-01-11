@@ -1,5 +1,6 @@
 """Joblib storage backend for HDFS."""
 
+import os.path
 import hdfs3
 import warnings
 from joblib._compat import _basestring
@@ -32,7 +33,7 @@ class HDFSStoreBackend(StoreBackendBase, StoreManagerMixin):
         if isinstance(location, _basestring):
             if location.startswith('/'):
                 location.replace('/', '')
-            self.cachedir = self.join_path(location, 'joblib')
+            self.cachedir = os.path.join(location, 'joblib')
             self.fs.mkdir(self.cachedir)
         elif isinstance(location, HDFSStoreBackend):
             self.cachedir = location.cachedir
@@ -57,5 +58,5 @@ class HDFSStoreBackend(StoreBackendBase, StoreManagerMixin):
         """Create recursively a directory on the HDFS file system."""
         current_path = ""
         for sub_dir in directory.split('/'):
-            current_path = self.join_path(current_path, sub_dir)
+            current_path = os.path.join(current_path, sub_dir)
             self.fs.mkdir(current_path)

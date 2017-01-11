@@ -1,5 +1,6 @@
 """Joblib storage backend for S3."""
 
+import os.path
 import s3fs
 import warnings
 from joblib._compat import _basestring
@@ -33,13 +34,13 @@ class S3FSStoreBackend(StoreBackendBase, StoreManagerMixin):
                 raise ValueError("No valid S3 bucket set")
 
             # Ensure the given bucket exists.
-            root_bucket = self.join_path("s3://", bucket)
+            root_bucket = os.path.join("s3://", bucket)
             if not self.fs.exists(root_bucket):
                 self.fs.mkdir(root_bucket)
 
             if location.startswith('/'):
                 location.replace('/', '')
-            self.cachedir = self.join_path(root_bucket, location, 'joblib')
+            self.cachedir = os.path.join(root_bucket, location, 'joblib')
             if not self.fs.exists(self.cachedir):
                 self.fs.mkdir(self.cachedir)
         elif isinstance(location, S3FSStoreBackend):
@@ -70,5 +71,5 @@ class S3FSStoreBackend(StoreBackendBase, StoreManagerMixin):
 
         current_path = self.cachedir
         for sub_dir in directory.split('/'):
-            current_path = self.join_path(current_path, sub_dir)
+            current_path = os.path.join(current_path, sub_dir)
             self.fs.mkdir(current_path)
