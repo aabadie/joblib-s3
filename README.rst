@@ -56,9 +56,26 @@ provided by joblibstore:
         print(result)
 
 
-Installing the hdfs3 package on Linux
-=====================================
+Installing the hdfs3 package
+============================
 
+`hdfs3 <https://hdfs3.readthedocs.io/en/latest/>`_ can be installed using 2
+ways.
+
+
+Using Conda Forge
+-----------------
+
+A prebuilt version of all `hdfs3` dependencies is available on Conda Forge. If
+you are already using Conda, this method is recommanded :
+
+.. code-block:: bash
+    $ conda install hdfs3 libhdfs3 -c conda-forge
+
+
+Building `hdfs` dependencies by hand
+------------------------------------
+ 
 The following notes are specific to Ubuntu 16.04 but can also be adapted to
 Fedora (packages names are slightly different).
 
