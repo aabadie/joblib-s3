@@ -34,3 +34,4 @@ install:
 script:
     - python examples/joblib_hdfs_multiply.py
     - pytest
+    - codecov
