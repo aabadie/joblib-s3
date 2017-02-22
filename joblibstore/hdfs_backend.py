@@ -2,7 +2,6 @@
 
 import os.path
 import hdfs3
-import warnings
 from joblib._compat import _basestring
 from joblib._store_backends import StoreBackendBase, StoreManagerMixin
 
@@ -46,12 +45,6 @@ class HDFSStoreBackend(StoreBackendBase, StoreManagerMixin):
         self.compress = (False if 'compress' not in kwargs
                          else kwargs['compress'])
 
-        # FileSystemStoreBackend can be used with mmap_mode options under
-        # certain conditions.
-        if 'mmap_mode' in kwargs and kwargs['mmap_mode'] is not None:
-            warnings.warn('Memory mapping cannot be used on HDFS store. '
-                          'This option will be ignored.',
-                          stacklevel=2)
         self.mmap_mode = None
 
     def _mkdirp(self, directory):
