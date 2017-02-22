@@ -1,3 +1,16 @@
+Joblibstore
+===========
+
+|Travis| |Codecov|
+
+.. |Travis| image:: https://travis-ci.org/aabadie/joblibstore.svg?branch=master
+    :target: https://travis-ci.org/aabadie/joblibstore
+
+.. |Codecov| image:: https://codecov.io/gh/aabadie/joblibstore/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/aabadie/joblibstore
+
+
+
 This package provides store backends for joblib Memory object used for fast
 caching of computation results.
 
@@ -16,13 +29,13 @@ documentation is available
 Getting the latest code
 =======================
 
-To get the latest code using git, simply type::
+To get the latest code use git::
 
     git clone git://github.com/aabadie/joblibstore.git
 
 
-Using joblibstore to cache result
-=================================
+Using joblibstore to cache result in the Cloud
+==============================================
 
 For the moment, joblibstore provides store backends for Amazon S3 cloud
 storage and Hadoop file systems (HDFS). The S3 backend relies on `boto3
