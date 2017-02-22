@@ -4,7 +4,7 @@ from setuptools import setup
 
 if __name__ == '__main__':
 
-    setup(name='joblib-store',
+    setup(name='joblibstore',
           version='0.1',
           description=('Provides extra store backends for joblib cache.'),
           url='https://github.com/aabadie/joblib-store',
