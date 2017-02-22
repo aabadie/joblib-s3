@@ -28,14 +28,10 @@ class HDFSStoreBackend(StoreBackendBase, StoreManagerMixin):
         self.fs = hdfs3.HDFileSystem(host=host, port=port, user=user,
                                      ticket_cache=ticket_cache, token=token,
                                      pars=pars, connect=connect)
-
-        if isinstance(location, _basestring):
-            if location.startswith('/'):
-                location.replace('/', '')
-            self.cachedir = os.path.join(location, 'joblib')
-            self.fs.mkdir(self.cachedir)
-        elif isinstance(location, HDFSStoreBackend):
-            self.cachedir = location.cachedir
+        if location.startswith('/'):
+            location = location.replace('/', '')
+        self.cachedir = os.path.join(location, 'joblib')
+        self.fs.mkdir(self.cachedir)
 
         # attach required methods using monkey patching trick.
         self.open_object = self.fs.open

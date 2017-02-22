@@ -1,6 +1,8 @@
 """Test the hdfs backend."""
 
 import os.path
+import array
+import numpy as np
 
 from pytest import mark
 
@@ -10,10 +12,13 @@ from joblibstore import register_hdfs_store_backend
 
 @mark.parametrize("compress", [True, False])
 @mark.parametrize("arg", ["test",
+                          b"test",
+                          array.array('d', [1, 2, 3]),
+                          np.arange(10),
                           (1, 2, 3),
                           {"1": 1, "2": 2},
                           [1, 2, 3, 4]])
-def test_store_standard_types(tmpdir, compress, arg):
+def test_store_standard_types(capsys, tmpdir, compress, arg):
     def func(arg):
         print("executing function")
         return arg
@@ -24,13 +29,59 @@ def test_store_standard_types(tmpdir, compress, arg):
                  backend='hdfs', host='localhost', port=8020, user='test',
                  verbose=100, compress=compress)
 
+    assert mem.store.cachedir == os.path.join(os.path.basename(tmpdir.strpath),
+                                              "joblib")
+
     cached_func = mem.cache(func)
     result = cached_func(arg)
-    assert result == arg
+
+    if isinstance(arg, np.ndarray):
+        np.testing.assert_array_equal(arg, result)
+    else:
+        assert result == arg
 
     # Second call should return the cached result
     result2 = cached_func(arg)
-    assert result2 == arg
+    if isinstance(arg, np.ndarray):
+        np.testing.assert_array_equal(arg, result)
+    else:
+        assert result2 == arg
+
+    # Make this test fail
+    # _, err = capsys.readouterr()
+    # assert not err
+
+
+def test_root_location_replacement(tmpdir):
+    location = os.path.join("/", os.path.basename(tmpdir.strpath))
+
+    register_hdfs_store_backend()
+
+    mem = Memory(location=location,
+                 backend='hdfs', host='localhost', port=8020, user='test',
+                 verbose=100)
+
+    assert mem.store.cachedir == os.path.join(os.path.basename(tmpdir.strpath),
+                                              "joblib")
+
+
+def test_passing_backend_base_to_memory(tmpdir):
+    location = os.path.basename(tmpdir.strpath)
+
+    register_hdfs_store_backend()
+
+    mem = Memory(location=location,
+                 backend='hdfs', host='localhost', port=8020, user='test',
+                 verbose=100)
+
+    assert mem.store.cachedir == os.path.join(os.path.basename(tmpdir.strpath),
+                                              "joblib")
+
+    mem2 = Memory(location=mem.store,
+                  backend='hdfs', host='localhost', port=8020, user='test',
+                  verbose=100)
+
+    assert mem2.store.cachedir == mem.store.cachedir
 
 
 def test_clear_cache(tmpdir):
