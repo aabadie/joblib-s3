@@ -49,7 +49,7 @@ class HDFSStoreBackend(StoreBackendBase, StoreManagerMixin):
         # FileSystemStoreBackend can be used with mmap_mode options under
         # certain conditions.
         if 'mmap_mode' in kwargs and kwargs['mmap_mode'] is not None:
-            warnings.warn('Memory mapping cannot be used on S3 store. '
+            warnings.warn('Memory mapping cannot be used on HDFS store. '
                           'This option will be ignored.',
                           stacklevel=2)
         self.mmap_mode = None
