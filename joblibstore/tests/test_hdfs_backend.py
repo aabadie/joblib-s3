@@ -1,14 +1,11 @@
 """Test the hdfs backend."""
 
+import os.path
+
 from pytest import mark
 
 from joblib import Memory
 from joblibstore import register_hdfs_store_backend
-
-
-def func(arg):
-    print("executing function")
-    return arg
 
 
 @mark.parametrize("compress", [True, False])
@@ -16,10 +13,14 @@ def func(arg):
                           (1, 2, 3),
                           {"1": 1, "2": 2},
                           [1, 2, 3, 4]])
-def test_store_standard_types(tmpdir, arg, compress):
-    register_hdfs_store_backend()
+def test_store_standard_types(tmpdir, compress, arg):
+    def func(arg):
+        print("executing function")
+        return arg
 
-    mem = Memory(location=tmpdir.strpath,
+    register_hdfs_store_backend()
+    print(os.path.basename(tmpdir.strpath))
+    mem = Memory(location=os.path.basename(tmpdir.strpath),
                  backend='hdfs', host='localhost', port=8020, user='test',
                  verbose=100, compress=compress)
 

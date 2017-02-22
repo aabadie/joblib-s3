@@ -7,5 +7,7 @@ numpy
 
 # For tests
 pytest
+pytest-cov
+pytest-pep8
 codecov
 tox
