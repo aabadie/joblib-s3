@@ -17,4 +17,7 @@ if __name__ == '__main__':
     array2 = np.arange(10000)
 
     result = multiply(array1, array2)
+
+    # Second call should return the cached result
+    result = multiply(array1, array2)
     print(result)
