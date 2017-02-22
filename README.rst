@@ -70,6 +70,7 @@ A prebuilt version of all `hdfs3` dependencies is available on Conda Forge. If
 you are already using Conda, this method is recommanded :
 
 ..  code-block:: bash
+
     $ conda install hdfs3 libhdfs3 -c conda-forge
 
 
