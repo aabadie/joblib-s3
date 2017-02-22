@@ -35,3 +35,6 @@ script:
     - python examples/joblib_hdfs_multiply.py
     - pytest
     - codecov
+
+notifications:
+      email: false
