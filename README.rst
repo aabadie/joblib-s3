@@ -25,6 +25,11 @@ If you are only interested in computation result caching in joblib, the Memory
 documentation is available
 `here <https://pythonhosted.org/joblib/memory.html>`_.
 
+For the moment, joblibstore provides store backends for Amazon S3 cloud
+storage and Hadoop file systems (HDFS). The S3 backend relies on `boto3
+<https://boto3.readthedocs.io/en/latest/>`_ and `dask s3fs
+<https://s3fs.readthedocs.io/en/latest/index.html>`_ packages. The HDFS backend
+relies on the `hdfs3 <https://hdfs3.readthedocs.io/en/latest/>`_ package.
 
 Getting the latest code
 =======================
@@ -33,15 +38,31 @@ To get the latest code use git::
 
     git clone git://github.com/aabadie/joblibstore.git
 
+Installing joblibstore
+======================
+
+We recommend using Anaconda 3 python distribution for full support of
+available store backends : S3 and HDFS.
+
+1. Install HDFS3 using conda-forge (only available for Python 3.4):
+
+..  code-block:: bash
+
+    $ conda install hdfs3 libhdfs3 -c conda-forge
+
+2. Create a Python 3.4 Anaconda environment, activate it and then use pip to
+install joblibstore, all other pip dependencies will be installed
+automatically:
+
+..  code-block:: bash
+
+    $ conda create -n py34 python==3.4
+    $ . activate py34
+    $ cd joblibstore
+    $ pip install .
 
 Using joblibstore to cache result in the Cloud
 ==============================================
-
-For the moment, joblibstore provides store backends for Amazon S3 cloud
-storage and Hadoop file systems (HDFS). The S3 backend relies on `boto3
-<https://boto3.readthedocs.io/en/latest/>`_ and `dask s3fs
-<https://s3fs.readthedocs.io/en/latest/index.html>`_ packages. The HDFS backend
-relies on the `hdfs3 <https://hdfs3.readthedocs.io/en/latest/>`_ package.
 
 We provide here an example of joblib cache usage with the S3 store backend
 provided by joblibstore:
@@ -68,27 +89,10 @@ provided by joblibstore:
         result = multiply(array1, array2)
         print(result)
 
+All examples are available in the `examples examples`_ directory.
 
-Installing the hdfs3 package
-============================
-
-`hdfs3 <https://hdfs3.readthedocs.io/en/latest/>`_ can be installed using 2
-ways.
-
-
-Using Conda Forge
------------------
-
-A prebuilt version of all `hdfs3` dependencies is available on Conda Forge. If
-you are already using Conda, this method is recommanded :
-
-..  code-block:: bash
-
-    $ conda install hdfs3 libhdfs3 -c conda-forge
-
-
-Building `hdfs` dependencies by hand
-------------------------------------
+Installing the hdfs3 package by hand
+====================================
 
 The following notes are specific to Ubuntu 16.04 but can also be adapted to
 Fedora (packages names are slightly different).
@@ -149,3 +153,57 @@ needed):
 .. code-block:: bash
 
    $ pip install hdfs3
+
+
+Developping in joblibstore
+==========================
+
+Prerequisites
+-------------
+
+In order to run the test suite, you need to setup a local hadoop cluster. This
+can be achieved very easily using the docker and docker-compose recipes given
+in the `docker docker`_ directory.
+
+1. Follow `docker instructions https://docs.docker.com/engine/installation/`_
+to install docker-engine on your computer. After this step, you have to be
+able to run the hello-world container:
+
+.. code-block:: bash
+
+   $ docker run hello-world
+
+Verify the docker service is correctly running:
+
+.. code-block:: bash
+
+   $ sudo systemctl status docker.service
+
+2. Install docker-compose using pip:
+
+.. code-block:: bash
+
+   $ pip install docker-compose
+
+3. Build the hadoop cluster using docker-compose:
+
+.. code-block:: bash
+
+    $ cd joblistore/docker
+    $ docker-compose run namenode hdfs namenode -format
+
+Running the test suite
+----------------------
+
+1. Start your hadoop cluster:
+
+.. code-block:: bash
+
+   $ cd joblibstore/docker
+   $ docker-compose up
+
+2. Run pytest (from another terminal):
+
+.. code-block:: bash
+
+    $ pytest
