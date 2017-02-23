@@ -89,7 +89,7 @@ provided by joblibstore:
         result = multiply(array1, array2)
         print(result)
 
-All examples are available in the `examples examples`_ directory.
+All examples are available in the `examples <examples>`_ directory.
 
 Installing the hdfs3 package by hand
 ====================================
@@ -163,9 +163,9 @@ Prerequisites
 
 In order to run the test suite, you need to setup a local hadoop cluster. This
 can be achieved very easily using the docker and docker-compose recipes given
-in the `docker docker`_ directory.
+in the `docker <docker>`_ directory.
 
-1. Follow `docker instructions https://docs.docker.com/engine/installation/`_
+1. Follow `docker instructions <https://docs.docker.com/engine/installation/>`_
 to install docker-engine on your computer. After this step, you have to be
 able to run the hello-world container:
 
