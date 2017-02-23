@@ -18,8 +18,11 @@ from joblibstore import register_hdfs_store_backend
                           (1, 2, 3),
                           {"1": 1, "2": 2},
                           [1, 2, 3, 4]])
-def test_store_standard_types(capsys, tmpdir, compress, arg):
+def test_store_any_types(capsys, tmpdir, compress, arg):
+    # pylint: disable=unused-argument
+    """Test that any types can be cached in hdfs store."""
     def func(arg):
+        """Dummy function."""
         print("executing function")
         return arg
 
@@ -53,6 +56,7 @@ def test_store_standard_types(capsys, tmpdir, compress, arg):
 
 
 def test_root_location_replacement(tmpdir):
+    """Test that root location is correctly replaced."""
     location = os.path.join("/", os.path.basename(tmpdir.strpath))
 
     register_hdfs_store_backend()
@@ -66,6 +70,7 @@ def test_root_location_replacement(tmpdir):
 
 
 def test_passing_backend_base_to_memory(tmpdir):
+    """Test passing a store as location in memory is correctly handled."""
     location = os.path.basename(tmpdir.strpath)
 
     register_hdfs_store_backend()
@@ -85,7 +90,9 @@ def test_passing_backend_base_to_memory(tmpdir):
 
 
 def test_clear_cache(tmpdir):
+    """Test clearing cache."""
     def func(arg):
+        """Dummy function."""
         print("executing function")
         return arg
 
@@ -101,7 +108,9 @@ def test_clear_cache(tmpdir):
 
 
 def test_get_cache_items(tmpdir):
+    """Test cache items listing."""
     def func(arg):
+        """Dummy function."""
         return arg
 
     register_hdfs_store_backend()
@@ -113,7 +122,7 @@ def test_get_cache_items(tmpdir):
 
     cached_func = mem.cache(func)
     for arg in ["test1", "test2", "test3"]:
-        cached_func("test")
+        cached_func(arg)
 
     # get_cache_items always returns an empty list for the moment
     assert len(mem.store.get_cache_items()) == 0

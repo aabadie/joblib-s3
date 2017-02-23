@@ -1,3 +1,5 @@
+"""Joblibstore module"""
+
 import warnings
 
 from .backends import register_s3fs_store_backend
@@ -10,6 +12,7 @@ except ImportError:
 
 __all__ = ['register_s3fs_store_backend']
 
+__version__ = "0.1.0-dev"
 
 if register_hdfs_store_backend is not None:
     __all__.append('register_hdfs_store_backend')

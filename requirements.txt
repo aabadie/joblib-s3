@@ -9,5 +9,6 @@ numpy
 pytest
 pytest-cov
 pytest-pep8
+pytest-pylint
 codecov
 tox
