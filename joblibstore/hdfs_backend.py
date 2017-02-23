@@ -35,7 +35,7 @@ class HDFSStoreBackend(StoreBackendBase, StoreManagerMixin):
                                           token=token, pars=pars,
                                           connect=connect)
         if location.startswith('/'):
-            location = location.replace('/', '')
+            location = location[1:]
         self.cachedir = os.path.join(location, 'joblib')
         self.storage.mkdir(self.cachedir)
 
