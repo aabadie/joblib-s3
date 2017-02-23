@@ -166,14 +166,14 @@ can be achieved very easily using the docker and docker-compose recipes given
 in the `docker docker`_ directory.
 
 1. Follow `docker instructions https://docs.docker.com/engine/installation/`_
-  to install docker-engine on your computer. After this step, you have to be
-  able to run the hello-world container:
+to install docker-engine on your computer. After this step, you have to be
+able to run the hello-world container:
 
 .. code-block:: bash
 
    $ docker run hello-world
 
-  Verify the docker service is correctly running:
+Verify the docker service is correctly running:
 
 .. code-block:: bash
 
