@@ -44,22 +44,28 @@ Installing joblibstore
 We recommend using Anaconda 3 python distribution for full support of
 available store backends : S3 and HDFS.
 
-1. Install HDFS3 using conda-forge (only available for Python 3.4):
-
-..  code-block:: bash
-
-    $ conda install hdfs3 libhdfs3 -c conda-forge
-
-2. Create a Python 3.4 Anaconda environment, activate it and then use pip to
-install joblibstore, all other pip dependencies will be installed
-automatically:
+1. Create a Python 3.4 Anaconda environment:
 
 ..  code-block:: bash
 
     $ conda create -n py34 python==3.4
     $ . activate py34
+
+2. Install HDFS3 using conda-forge (only available for Python 3.4):
+
+..  code-block:: bash
+
+    $ conda install hdfs3 libhdfs3 -c conda-forge
+
+3. Create a Python 3.4 Anaconda environment, activate it and then use pip to
+install joblibstore, all other pip dependencies will be installed
+automatically:
+
+..  code-block:: bash
+
     $ cd joblibstore
     $ pip install .
+
 
 Using joblibstore to cache result in the Cloud
 ==============================================
