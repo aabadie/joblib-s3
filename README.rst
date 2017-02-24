@@ -179,13 +179,6 @@ able to run the hello-world container:
 
    $ docker run hello-world
 
-Verify the docker service is correctly running:
-
-.. code-block:: bash
-
-   $ sudo systemctl status docker.service
-
-
 2. Install docker-compose using pip:
 
 .. code-block:: bash
