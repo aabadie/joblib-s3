@@ -11,7 +11,7 @@ from joblib.disk import mkdirp, rm_subdirs
 from joblibstore import register_s3fs_store_backend
 
 
-@pytest.fixture()
+@pytest.fixture(autouse=True)
 def s3fs_mock(monkeypatch):
     """Mock fixture for S3FileSystem."""
     def mock_open(self, *args, **kwargs):
@@ -49,7 +49,6 @@ def s3fs_mock(monkeypatch):
     monkeypatch.setattr(S3FileSystem, "exists", mock_exists)
 
 
-@pytest.mark.usefixtures("s3fs_mock")
 @pytest.mark.parametrize("compress", [True, False])
 @pytest.mark.parametrize("arg", ["test",
                                  b"test",
@@ -91,7 +90,6 @@ def test_store_standard_types(capsys, tmpdir, compress, arg):
     assert not err
 
 
-@pytest.mark.usefixtures("s3fs_mock")
 @pytest.mark.parametrize("compress", [True, False])
 def test_store_np_array(capsys, tmpdir, compress):
     """Test that any types can be cached in s3fs store."""
@@ -138,7 +136,6 @@ def test_store_np_array(capsys, tmpdir, compress):
     assert not err
 
 
-@pytest.mark.usefixtures("s3fs_mock")
 def test_clear_cache(capsys, tmpdir):
     """Check clearing the cache."""
     def func(arg):
@@ -167,7 +164,6 @@ def test_clear_cache(capsys, tmpdir):
     assert not os.listdir(mem.store.cachedir)
 
 
-@pytest.mark.usefixtures("s3fs_mock")
 def test_get_cache_items(tmpdir):
     """Test cache items listing."""
     def func(arg):
@@ -191,7 +187,6 @@ def test_get_cache_items(tmpdir):
     assert len(mem.store.get_cache_items()) == 0
 
 
-@pytest.mark.usefixtures("s3fs_mock")
 def test_no_bucket_raises_exception(tmpdir):
     """Check correct exception is set when no bucket is set."""
 
