@@ -53,8 +53,7 @@ full support of available store backends : S3 and HDFS.
     $ conda create -n py34-joblibstore python==3.4 s3fs hdfs3 libhdfs3 -c conda-forge
     $ . activate py34-joblibstore
 
-2. From your Python 3.4/Joblistore conda environment, simply use pip to
-install joblibstore:
+2. From the `py34-joblistore` environment, use pip to install joblibstore:
 
 ..  code-block:: bash
 
@@ -128,27 +127,27 @@ Prerequisites
 
 In order to run the test suite, you need to setup a local hadoop cluster. This
 can be achieved very easily using the docker and docker-compose recipes given
-in the `docker <docker>`_ directory.
+in the `docker <docker>`_ directory:
 
-1. Follow `docker instructions <https://docs.docker.com/engine/installation/>`_
-to install docker-engine on your computer. After this step, you have to be
-able to run the hello-world container:
+1. `Install docker-engine <https://docs.docker.com/engine/installation/>`_:
 
-.. code-block:: bash
+You have to be able to run the hello-world container:
 
-   $ docker run hello-world
+..  code-block:: bash
+
+    $ docker run hello-world
 
 2. Install docker-compose using pip in your anaconda environment:
 
-.. code-block:: bash
+..  code-block:: bash
 
-   $ . activate py34-joblibstore
-   $ pip install docker-compose
+    $ . activate py34-joblibstore
+    $ pip install docker-compose
 
 
 3. Build the hadoop cluster using docker-compose:
 
-.. code-block:: bash
+..  code-block:: bash
 
     $ cd joblistore/docker
     $ docker-compose run namenode hdfs namenode -format
@@ -158,14 +157,14 @@ Running the test suite
 
 1. Start your hadoop cluster:
 
-.. code-block:: bash
+..  code-block:: bash
 
    $ cd joblibstore/docker
    $ docker-compose up
 
 2. Run pytest (from another terminal):
 
-.. code-block:: bash
+..  code-block:: bash
 
     $ pytest
 
@@ -182,7 +181,7 @@ Fedora (packages names are slightly different).
 
 1. Clone libhdfs3 from github:
 
-.. code-block:: bash
+..  code-block:: bash
 
     $ sudo mkdir /opt/hdfs3
     $ sudo chown <login>:<login> /opt/hdfs3
@@ -192,7 +191,7 @@ Fedora (packages names are slightly different).
 
 2. Install required packages
 
-.. code-block:: bash
+..  code-block:: bash
 
     $ sudo apt-get install cmake cmake-curses-gui libxml2-dev libprotobuf-dev \
     libkrb5-dev uuid-dev libgsasl7-dev protobuf-compiler protobuf-c-compiler \
@@ -201,7 +200,7 @@ Fedora (packages names are slightly different).
 
 3. Use CMake to configure and build
 
-.. code-block:: bash
+..  code-block:: bash
 
    $ cd /opt/hdfs3/libhdfs3
    $ mkdir build
@@ -217,18 +216,14 @@ Fedora (packages names are slightly different).
 
    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/hdfs3/libhdfs3/dist
 
+5. reload your environment:
 
-and reload it:
-
-
-.. code-block:: bash
+..  code-block:: bash
 
    $ source ~/.bashrc
 
+6. Use **pip** to install *hdfs3* (use `sudo` if needed):
 
-5. Finally you can use **pip** to install the *hdfs3* package (use `sudo` if
-needed):
-
-.. code-block:: bash
+..  code-block:: bash
 
    $ pip install hdfs3
