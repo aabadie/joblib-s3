@@ -1,5 +1,7 @@
 """Test the hdfs backend."""
 
+from __future__ import print_function
+
 import os.path
 
 from pytest import mark

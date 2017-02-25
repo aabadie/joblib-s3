@@ -1,5 +1,7 @@
 """Test S3FS store backend."""
 
+from __future__ import print_function
+
 import os.path
 import array
 
