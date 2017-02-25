@@ -58,7 +58,7 @@ full support of available store backends : S3 and HDFS.
 ..  code-block:: bash
 
     $ cd joblibstore
-    $ pip install .
+    $ pip install -r requirements.txt
 
 
 Using joblibstore to cache computation results in the Cloud
