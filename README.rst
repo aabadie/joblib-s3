@@ -137,11 +137,10 @@ You have to be able to run the hello-world container:
 
     $ docker run hello-world
 
-2. Install docker-compose using pip in your anaconda environment:
+2. Install docker-compose with pip:
 
 ..  code-block:: bash
 
-    $ . activate py34-joblibstore
     $ pip install docker-compose
 
 
@@ -162,7 +161,13 @@ Running the test suite
    $ cd joblibstore/docker
    $ docker-compose up
 
-2. Run pytest (from another terminal):
+2. In another terminal, activate your joblibstore conda environment:
+
+..  code-block:: bash
+
+    $ . activate py34-joblibstore
+
+3. Run pytest
 
 ..  code-block:: bash
 
