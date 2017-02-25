@@ -1,7 +1,6 @@
 """Joblib storage backend for S3."""
 
 import os.path
-import warnings
 import s3fs
 from joblib._store_backends import StoreBackendBase, StoreManagerMixin
 
