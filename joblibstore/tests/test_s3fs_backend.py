@@ -12,44 +12,44 @@ from joblibstore import register_s3fs_store_backend
 
 
 @pytest.fixture()
-def s3fs_custom(monkeypatch):
-    """open fixture"""
-    def custom_open(self, *args, **kwargs):
+def s3fs_mock(monkeypatch):
+    """Mock fixture for S3FileSystem."""
+    def mock_open(self, *args, **kwargs):
         # pylint: disable=unused-argument
-        """Dummy constructor."""
+        """Mock open."""
         return open(*args, **kwargs)
 
-    def custom_exists(self, directory):
+    def mock_exists(self, directory):
         # pylint: disable=unused-argument
-        """Dummy constructor."""
+        """Mock exists."""
         return os.path.exists(directory)
 
-    def custom_rm(self, directory, *args, **kwargs):
-        """Dummy constructor."""
+    def mock_rm(self, directory, *args, **kwargs):
+        """Mock rm."""
         # pylint: disable=unused-argument
         rm_subdirs(directory)
 
-    def custom_mkdir(self, directory):
+    def mock_mkdir(self, directory):
         # pylint: disable=unused-argument
-        """Dummy constructor."""
+        """Mock mkdir."""
         if directory.startswith("s3://"):
             # Skip bucket creation on purpose
             return
         return mkdirp(directory)
 
-    def custom_init(self, *args, **kwargs):
+    def mock_init(self, *args, **kwargs):
         # pylint: disable=unused-argument
-        """Dummy constructor."""
+        """Mock constructor."""
         pass
 
-    monkeypatch.setattr(S3FileSystem, "__init__", custom_init)
-    monkeypatch.setattr(S3FileSystem, "mkdir", custom_mkdir)
-    monkeypatch.setattr(S3FileSystem, "rm", custom_rm)
-    monkeypatch.setattr(S3FileSystem, "open", custom_open)
-    monkeypatch.setattr(S3FileSystem, "exists", custom_exists)
+    monkeypatch.setattr(S3FileSystem, "__init__", mock_init)
+    monkeypatch.setattr(S3FileSystem, "mkdir", mock_mkdir)
+    monkeypatch.setattr(S3FileSystem, "rm", mock_rm)
+    monkeypatch.setattr(S3FileSystem, "open", mock_open)
+    monkeypatch.setattr(S3FileSystem, "exists", mock_exists)
 
 
-@pytest.mark.usefixtures("s3fs_custom")
+@pytest.mark.usefixtures("s3fs_mock")
 @pytest.mark.parametrize("compress", [True, False])
 @pytest.mark.parametrize("arg", ["test",
                                  b"test",
@@ -91,7 +91,7 @@ def test_store_standard_types(capsys, tmpdir, compress, arg):
     assert not err
 
 
-@pytest.mark.usefixtures("s3fs_custom")
+@pytest.mark.usefixtures("s3fs_mock")
 @pytest.mark.parametrize("compress", [True, False])
 def test_store_np_array(capsys, tmpdir, compress):
     """Test that any types can be cached in s3fs store."""
@@ -138,7 +138,7 @@ def test_store_np_array(capsys, tmpdir, compress):
     assert not err
 
 
-@pytest.mark.usefixtures("s3fs_custom")
+@pytest.mark.usefixtures("s3fs_mock")
 def test_clear_cache(capsys, tmpdir):
     """Check clearing the cache."""
     def func(arg):
@@ -167,7 +167,7 @@ def test_clear_cache(capsys, tmpdir):
     assert not os.listdir(mem.store.cachedir)
 
 
-@pytest.mark.usefixtures("s3fs_custom")
+@pytest.mark.usefixtures("s3fs_mock")
 def test_get_cache_items(tmpdir):
     """Test cache items listing."""
     def func(arg):
@@ -191,7 +191,7 @@ def test_get_cache_items(tmpdir):
     assert len(mem.store.get_cache_items()) == 0
 
 
-@pytest.mark.usefixtures("s3fs_custom")
+@pytest.mark.usefixtures("s3fs_mock")
 def test_no_bucket_raises_exception(tmpdir):
     """Check correct exception is set when no bucket is set."""
 
