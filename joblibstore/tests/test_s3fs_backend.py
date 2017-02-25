@@ -2,6 +2,7 @@
 
 import os.path
 import array
+import io
 from unittest.mock import patch
 
 import pytest
@@ -27,7 +28,7 @@ def s3fs_exists(monkeypatch):
 @pytest.fixture()
 def s3fs_open(monkeypatch):
     """open fixture"""
-    monkeypatch.setattr(S3FileSystem, "open", open)
+    monkeypatch.setattr(S3FileSystem, "open", io.open)
 
 
 @pytest.fixture()

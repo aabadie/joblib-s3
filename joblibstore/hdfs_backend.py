@@ -47,6 +47,7 @@ class HDFSStoreBackend(StoreBackendBase, StoreManagerMixin):
         self.compress = (False if 'compress' not in kwargs
                          else kwargs['compress'])
 
+        # Memory map mode is not supported
         self.mmap_mode = None
 
     def _mkdirp(self, directory):

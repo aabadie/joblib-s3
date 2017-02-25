@@ -56,12 +56,7 @@ class S3FSStoreBackend(StoreBackendBase, StoreManagerMixin):
         self.compress = (False if 'compress' not in kwargs
                          else kwargs['compress'])
 
-        # FileSystemStoreBackend can be used with mmap_mode options under
-        # certain conditions.
-        if 'mmap_mode' in kwargs and kwargs['mmap_mode'] is not None:
-            warnings.warn('Memory mapping cannot be used on S3 store. '
-                          'This option will be ignored.',
-                          stacklevel=2)
+        # Memory map mode is not supported
         self.mmap_mode = None
 
     def _mkdirp(self, directory):
