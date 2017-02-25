@@ -2,8 +2,6 @@
 
 import os.path
 import array
-import io
-from unittest.mock import patch
 
 import pytest
 import numpy as np
@@ -14,31 +12,44 @@ from joblibstore import register_s3fs_store_backend
 
 
 @pytest.fixture()
-def s3fs_mkdirp(monkeypatch):
-    """mkdirp fixture"""
-    monkeypatch.setattr(S3FileSystem, "mkdir", mkdirp)
-
-
-@pytest.fixture()
-def s3fs_exists(monkeypatch):
-    """exists fixture"""
-    monkeypatch.setattr(S3FileSystem, "exists", os.path.exists)
-
-
-@pytest.fixture()
-def s3fs_open(monkeypatch):
+def s3fs_custom(monkeypatch):
     """open fixture"""
-    monkeypatch.setattr(S3FileSystem, "open", io.open)
+    def custom_open(self, *args, **kwargs):
+        # pylint: disable=unused-argument
+        """Dummy constructor."""
+        return open(*args, **kwargs)
+
+    def custom_exists(self, directory):
+        # pylint: disable=unused-argument
+        """Dummy constructor."""
+        return os.path.exists(directory)
+
+    def custom_rm(self, directory, *args, **kwargs):
+        """Dummy constructor."""
+        # pylint: disable=unused-argument
+        rm_subdirs(directory)
+
+    def custom_mkdir(self, directory):
+        # pylint: disable=unused-argument
+        """Dummy constructor."""
+        if directory.startswith("s3://"):
+            # Skip bucket creation on purpose
+            return
+        return mkdirp(directory)
+
+    def custom_init(self, *args, **kwargs):
+        # pylint: disable=unused-argument
+        """Dummy constructor."""
+        pass
+
+    monkeypatch.setattr(S3FileSystem, "__init__", custom_init)
+    monkeypatch.setattr(S3FileSystem, "mkdir", custom_mkdir)
+    monkeypatch.setattr(S3FileSystem, "rm", custom_rm)
+    monkeypatch.setattr(S3FileSystem, "open", custom_open)
+    monkeypatch.setattr(S3FileSystem, "exists", custom_exists)
 
 
-@pytest.fixture()
-def s3fs_rm(monkeypatch):
-    """open fixture"""
-    monkeypatch.setattr(S3FileSystem, "rm", rm_subdirs)
-
-
-@pytest.mark.usefixtures("s3fs_open", "s3fs_mkdirp", "s3fs_exists")
-@patch("s3fs.S3FileSystem")
+@pytest.mark.usefixtures("s3fs_custom")
 @pytest.mark.parametrize("compress", [True, False])
 @pytest.mark.parametrize("arg", ["test",
                                  b"test",
@@ -46,9 +57,8 @@ def s3fs_rm(monkeypatch):
                                  (1, 2, 3),
                                  {"1": 1, "2": 2},
                                  [1, 2, 3, 4]])
-def test_store_standard_types(s3, capsys, tmpdir, compress, arg):
-    # pylint: disable=unused-argument
-    """Test that any types can be cached in hdfs store."""
+def test_store_standard_types(capsys, tmpdir, compress, arg):
+    """Test that standard types can be cached in s3fs store."""
     def func(arg):
         """Dummy function."""
         print("executing function")
@@ -67,18 +77,24 @@ def test_store_standard_types(s3, capsys, tmpdir, compress, arg):
 
     assert result == arg
 
+    out, err = capsys.readouterr()
+    assert out == "executing function\n"
+    assert not err
+
     # Second call should also return the cached result
     result2 = cached_func(arg)
 
     assert result2 == arg
 
+    out, err = capsys.readouterr()
+    assert not out
+    assert not err
 
-@pytest.mark.usefixtures("s3fs_open", "s3fs_mkdirp", "s3fs_exists")
-@patch("s3fs.S3FileSystem")
+
+@pytest.mark.usefixtures("s3fs_custom")
 @pytest.mark.parametrize("compress", [True, False])
-def test_store_np_array(s3, capsys, tmpdir, compress):
-    # pylint: disable=unused-argument
-    """Test that any types can be cached in hdfs store."""
+def test_store_np_array(capsys, tmpdir, compress):
+    """Test that any types can be cached in s3fs store."""
     def func(arg):
         """Dummy @mark.parametrize("arg", ["test",
                           b"test",
@@ -108,16 +124,22 @@ def test_store_np_array(s3, capsys, tmpdir, compress):
 
     np.testing.assert_array_equal(result, arg)
 
+    out, err = capsys.readouterr()
+    assert out == "executing function\n"
+    assert not err
+
     # Second call should also return the cached result
     result2 = cached_func(arg)
 
     np.testing.assert_array_equal(result2, arg)
 
+    out, err = capsys.readouterr()
+    assert not out
+    assert not err
 
-@pytest.mark.usefixtures("s3fs_rm")
-@patch("s3fs.S3FileSystem")
-def test_clear_cache(s3, tmpdir):
-    # pylint: disable=unused-argument
+
+@pytest.mark.usefixtures("s3fs_custom")
+def test_clear_cache(capsys, tmpdir):
     """Check clearing the cache."""
     def func(arg):
         """Dummy function."""
@@ -131,15 +153,22 @@ def test_clear_cache(s3, tmpdir):
     cached_func = mem.cache(func)
     cached_func("test")
 
+    out, _ = capsys.readouterr()
+    assert out == "executing function\n"
+
     mem.clear()
 
-    assert not os.path.exists(mem.store.cachedir)
+    cached_func("test")
+    out, _ = capsys.readouterr()
+    assert out == "executing function\n"
+
+    mem.clear()
+    print(mem.store.cachedir)
+    assert not os.listdir(mem.store.cachedir)
 
 
-@pytest.mark.usefixtures("s3fs_rm")
-@patch("s3fs.S3FileSystem")
-def test_get_cache_items(s3, tmpdir):
-    # pylint: disable=unused-argument
+@pytest.mark.usefixtures("s3fs_custom")
+def test_get_cache_items(tmpdir):
     """Test cache items listing."""
     def func(arg):
         """Dummy function."""
@@ -162,6 +191,7 @@ def test_get_cache_items(s3, tmpdir):
     assert len(mem.store.get_cache_items()) == 0
 
 
+@pytest.mark.usefixtures("s3fs_custom")
 def test_no_bucket_raises_exception(tmpdir):
     """Check correct exception is set when no bucket is set."""
 
