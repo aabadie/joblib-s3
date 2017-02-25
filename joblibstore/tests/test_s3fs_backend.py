@@ -4,67 +4,47 @@ import os.path
 import array
 from unittest.mock import patch
 
+import pytest
 import numpy as np
-from pytest import mark, fixture, raises
 from s3fs import S3FileSystem
 from joblib import Memory
 from joblib.disk import mkdirp, rm_subdirs
 from joblibstore import register_s3fs_store_backend
 
 
-def custom_mkdirp(directory):
-    """Replace S3 'mkdir' function with a custom local filesystem one."""
-    if directory.startswith("s3:"):
-        directory = directory.replace("s3:/", "")
-    mkdirp(directory)
-
-
-def custom_rm(directory):
-    """Replace S3 'rm' function with a custom local filesystem one."""
-    if directory.startswith("s3:"):
-        directory = directory.replace("s3:/", "")
-    rm_subdirs(directory)
-
-
-def custom_exists(location):
-    """Replace S3 'exists' function with a custom local filesystem one."""
-    if location.startswith("s3:"):
-        location = location.replace("s3:/", "")
-    return os.path.exists(location)
-
-
-@fixture(scope="module")
+@pytest.fixture()
 def s3fs_mkdirp(monkeypatch):
     """mkdirp fixture"""
-    monkeypatch.setattr(S3FileSystem, "mkdir", custom_mkdirp)
+    monkeypatch.setattr(S3FileSystem, "mkdir", mkdirp)
 
 
-@fixture(scope="module")
+@pytest.fixture()
 def s3fs_exists(monkeypatch):
     """exists fixture"""
-    monkeypatch.setattr(S3FileSystem, "exists", custom_exists)
+    monkeypatch.setattr(S3FileSystem, "exists", os.path.exists)
 
 
-@fixture(scope="module")
+@pytest.fixture()
 def s3fs_open(monkeypatch):
     """open fixture"""
     monkeypatch.setattr(S3FileSystem, "open", open)
 
 
-@fixture(scope="module")
+@pytest.fixture()
 def s3fs_rm(monkeypatch):
     """open fixture"""
-    monkeypatch.setattr(S3FileSystem, "rm", custom_rm)
+    monkeypatch.setattr(S3FileSystem, "rm", rm_subdirs)
 
 
+@pytest.mark.usefixtures("s3fs_open", "s3fs_mkdirp", "s3fs_exists")
 @patch("s3fs.S3FileSystem")
-@mark.parametrize("compress", [True, False])
-@mark.parametrize("arg", ["test",
-                          b"test",
-                          array.array('d', [1, 2, 3, 4]),
-                          (1, 2, 3),
-                          {"1": 1, "2": 2},
-                          [1, 2, 3, 4]])
+@pytest.mark.parametrize("compress", [True, False])
+@pytest.mark.parametrize("arg", ["test",
+                                 b"test",
+                                 array.array('d', [1, 2, 3, 4]),
+                                 (1, 2, 3),
+                                 {"1": 1, "2": 2},
+                                 [1, 2, 3, 4]])
 def test_store_standard_types(s3, capsys, tmpdir, compress, arg):
     # pylint: disable=unused-argument
     """Test that any types can be cached in hdfs store."""
@@ -92,8 +72,9 @@ def test_store_standard_types(s3, capsys, tmpdir, compress, arg):
     assert result2 == arg
 
 
+@pytest.mark.usefixtures("s3fs_open", "s3fs_mkdirp", "s3fs_exists")
 @patch("s3fs.S3FileSystem")
-@mark.parametrize("compress", [True, False])
+@pytest.mark.parametrize("compress", [True, False])
 def test_store_np_array(s3, capsys, tmpdir, compress):
     # pylint: disable=unused-argument
     """Test that any types can be cached in hdfs store."""
@@ -132,6 +113,7 @@ def test_store_np_array(s3, capsys, tmpdir, compress):
     np.testing.assert_array_equal(result2, arg)
 
 
+@pytest.mark.usefixtures("s3fs_rm")
 @patch("s3fs.S3FileSystem")
 def test_clear_cache(s3, tmpdir):
     # pylint: disable=unused-argument
@@ -150,9 +132,10 @@ def test_clear_cache(s3, tmpdir):
 
     mem.clear()
 
-    assert not custom_exists(mem.store.cachedir)
+    assert not os.path.exists(mem.store.cachedir)
 
 
+@pytest.mark.usefixtures("s3fs_rm")
 @patch("s3fs.S3FileSystem")
 def test_get_cache_items(s3, tmpdir):
     # pylint: disable=unused-argument
@@ -181,6 +164,6 @@ def test_get_cache_items(s3, tmpdir):
 def test_no_bucket_raises_exception(tmpdir):
     """Check correct exception is set when no bucket is set."""
 
-    with raises(ValueError) as excinfo:
+    with pytest.raises(ValueError) as excinfo:
         Memory(location=tmpdir.strpath, backend='s3', verbose=0)
     excinfo.match("No valid S3 bucket set")
