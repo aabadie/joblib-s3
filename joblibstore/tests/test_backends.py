@@ -17,5 +17,5 @@ def test_hdfs_store_backend_registration():
 def test_s3fs_store_backend_registration():
     """Smoke test for hdfs backend registration."""
     register_s3fs_store_backend()
-    assert "s3fs" in _STORE_BACKENDS
-    assert _STORE_BACKENDS["s3fs"] == S3FSStoreBackend
+    assert "s3" in _STORE_BACKENDS
+    assert _STORE_BACKENDS["s3"] == S3FSStoreBackend

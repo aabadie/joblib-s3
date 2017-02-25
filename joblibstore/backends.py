@@ -7,7 +7,7 @@ from .hdfs_backend import HDFSStoreBackend
 
 def register_s3fs_store_backend():
     """Register a S3 store backend for joblib memory caching."""
-    register_store_backend('s3fs', S3FSStoreBackend)
+    register_store_backend('s3', S3FSStoreBackend)
 
 
 def register_hdfs_store_backend():
