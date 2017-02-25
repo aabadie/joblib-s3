@@ -94,17 +94,7 @@ def test_store_standard_types(capsys, tmpdir, compress, arg):
 def test_store_np_array(capsys, tmpdir, compress):
     """Test that any types can be cached in s3fs store."""
     def func(arg):
-        """Dummy @mark.parametrize("arg", ["test",
-                          b"test",
-                          array.array('d', [1, 2, 3, 4]),
-                          (1, 2, 3),
-                          {"1": 1, "2": 2},
-                          [1, 2, 3, 4]])@mark.parametrize("arg", ["test",
-                          b"test",
-                          array.array('d', [1, 2, 3, 4]),
-                          (1, 2, 3),
-                          {"1": 1, "2": 2},
-                          [1, 2, 3, 4]])function."""
+        """Dummy function."""
         print("executing function")
         return arg
 
