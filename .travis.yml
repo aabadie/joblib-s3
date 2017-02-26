@@ -33,7 +33,7 @@ script:
     - python examples/joblib_hdfs_multiply.py
     - pytest
 
-after-success:
+after_success:
     - codecov
 
 notifications:
