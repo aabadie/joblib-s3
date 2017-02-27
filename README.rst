@@ -32,6 +32,8 @@ relies on the `hdfs3 <https://hdfs3.readthedocs.io/en/latest/>`_ package.
 We plan to add support for other cloud storage providers: Google Cloud Storage,
 Azure, etc
 
+Joblibstore supports Python 2.7, 3.4 and 3.5.
+
 Getting the latest code
 =======================
 
@@ -46,14 +48,14 @@ We recommend using
 `Python Anaconda 3 distribution <https://www.continuum.io/Downloads>`_ for
 full support of available store backends : S3 and HDFS.
 
-1. Create a Python 3.4 Anaconda environment and activate it:
+1. Create an naconda environment (use python 2.7, 3.4 or 3.5) and activate it:
 
 ..  code-block:: bash
 
-    $ conda create -n py34-joblibstore python==3.4 s3fs hdfs3 libhdfs3 -c conda-forge
-    $ . activate py34-joblibstore
+    $ conda create -n joblibstore-env python==3.5 s3fs hdfs3 libhdfs3 -c conda-forge
+    $ . activate joblibstore-env
 
-2. From the `py34-joblistore` environment, use pip to install joblibstore:
+2. From the `joblistore-env` environment, use pip to install joblibstore:
 
 ..  code-block:: bash
 
@@ -161,11 +163,11 @@ Running the test suite
    $ cd joblibstore/docker
    $ docker-compose up
 
-2. In another terminal, activate your joblibstore conda environment:
+2. In another terminal, activate your joblibstore-env conda environment:
 
 ..  code-block:: bash
 
-    $ . activate py34-joblibstore
+    $ . activate joblibstore-env
 
 3. Run pytest
 
