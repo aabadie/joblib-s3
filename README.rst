@@ -23,14 +23,14 @@ If you are only interested in computation result caching in joblib, the Memory
 documentation is available
 `here <https://pythonhosted.org/joblib/memory.html>`_.
 
-For the moment, joblibstore provides store backends for Amazon S3 cloud
-storage and Hadoop file systems (HDFS). The S3 backend relies on `boto3
-<https://boto3.readthedocs.io/en/latest/>`_ and `dask s3fs
-<https://s3fs.readthedocs.io/en/latest/index.html>`_ packages. The HDFS backend
-relies on the `hdfs3 <https://hdfs3.readthedocs.io/en/latest/>`_ package.
+For the moment, joblibstore provides cloud storage backends for AWS S3
+and Hadoop HDFS. The AWS S3 backend relies on the `dask s3fs
+<https://s3fs.readthedocs.io/en/latest/index.html>`_ package and the Hadoop
+HDFS backend relies on the `hdfs3 <https://hdfs3.readthedocs.io/en/latest/>`_
+package.
 
-We plan to add support for other cloud storage providers: Google Cloud Storage,
-Azure, etc
+In the future, we plan to add support for other cloud storage providers:
+Google Cloud Storage, Azure, etc
 
 Joblibstore supports Python 2.7, 3.4 and 3.5.
 
