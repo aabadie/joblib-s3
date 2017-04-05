@@ -1,8 +1,11 @@
 """Joblib storage backend for HDFS."""
 
+import datetime
+import re
 import os.path
 import hdfs3
-from joblib._store_backends import StoreBackendBase, StoreManagerMixin
+from joblib._store_backends import (StoreBackendBase, StoreManagerMixin,
+                                    CacheItemInfo)
 
 
 class HDFSStoreBackend(StoreBackendBase, StoreManagerMixin):
@@ -24,7 +27,33 @@ class HDFSStoreBackend(StoreBackendBase, StoreManagerMixin):
 
     def get_cache_items(self):
         """Return the whole list of items available in cache."""
-        return []
+        cache_items = []
+        try:
+            self.storage.ls(self.cachedir)
+        except IOError:
+            return []
+
+        for path in self.storage.walk(self.cachedir):
+            is_cache_hash_dir = re.match('[a-f0-9]{32}$',
+                                         os.path.basename(path))
+
+            if is_cache_hash_dir:
+                output_filename = os.path.join(path, 'output.pkl')
+                try:
+                    last_access = self.storage.info(
+                        output_filename)['last_access']
+                except IOError:  # pragma: no cover
+                    try:
+                        last_access = self.storage.info(path)['last_access']
+                    except IOError:
+                        # The directory has already been deleted
+                        continue
+                dirsize = self.storage.info(output_filename)['size']
+
+                last_access = datetime.datetime.fromtimestamp(last_access)
+                cache_items.append(CacheItemInfo(path, dirsize, last_access))
+
+        return cache_items
 
     def configure(self, location, host=None, port=None, user=None,
                   ticket_cache=None, token=None, pars=None, connect=True,
