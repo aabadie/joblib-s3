@@ -10,13 +10,16 @@ if __name__ == '__main__':
     mem = Memory(location='joblib_cache_hdfs',
                  backend='hdfs', host='localhost', port=8020, user='test',
                  verbose=100, compress=True)
-
+    mem.clear()
     multiply = mem.cache(np.multiply)
-    array1 = np.arange(10000)
-    array2 = np.arange(10000)
+    array1 = np.arange(1000)
+    array2 = np.arange(1000)
 
-    result = multiply(array1, array2)
+    print("# First call")
+    _ = multiply(array1, array2)
 
+    print("# Second call")
     # Second call should return the cached result
     result = multiply(array1, array2)
+
     print(result)

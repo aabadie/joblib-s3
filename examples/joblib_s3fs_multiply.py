@@ -11,13 +11,17 @@ if __name__ == '__main__':
     # need to pass them to Memory constructor (even if it's possible).
     mem = Memory(location='joblib_cache_s3', backend='s3fs', verbose=100,
                  compress=True, bucket='joblib-aa')
+    mem.clear()
 
     multiply = mem.cache(np.multiply)
     array1 = np.arange(10000)
     array2 = np.arange(10000)
 
-    result = multiply(array1, array2)
+    print("# First call")
+    _ = multiply(array1, array2)
 
     # Second call should return the cached result
+    print("# Second call")
     result = multiply(array1, array2)
+
     print(result)
