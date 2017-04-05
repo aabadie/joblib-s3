@@ -48,7 +48,7 @@ We recommend using
 `Python Anaconda 3 distribution <https://www.continuum.io/Downloads>`_ for
 full support of available store backends : S3 and HDFS.
 
-1. Create an naconda environment (use python 2.7, 3.4 or 3.5) and activate it:
+1. Create an Anaconda environment (use python 2.7, 3.4 or 3.5) and activate it:
 
 ..  code-block:: bash
 
