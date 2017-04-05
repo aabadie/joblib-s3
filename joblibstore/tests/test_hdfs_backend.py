@@ -119,7 +119,7 @@ def test_get_cache_items(tmpdir):
         cached_func(arg)
 
     # get_cache_items always returns an empty list for the moment
-    assert len(mem.store.get_cache_items()) == 0
+    assert len(mem.store.get_cache_items()) == 3
 
     mem.clear()
     assert len(mem.store.get_cache_items()) == 0
