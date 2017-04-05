@@ -17,8 +17,10 @@ from joblibstore import register_hdfs_store_backend
                           b"test",
                           (1, 2, 3),
                           {"1": 1, "2": 2},
-                          [1, 2, 3, 4]])
-def test_store_standard_types(capsys, tmpdir, compress, arg):
+                          [1, 2, 3, 4],
+                          array.array('d', [1, 2, 3]),
+                          np.arange(10)])
+def test_store_and_retrieve(capsys, tmpdir, compress, arg):
     """Test that any types can be cached in hdfs store."""
     def func(arg):
         """Dummy function."""
@@ -33,62 +35,28 @@ def test_store_standard_types(capsys, tmpdir, compress, arg):
 
     assert mem.store.cachedir == os.path.join(tmpdir.strpath[1:], "joblib")
 
-    cached_func = mem.cache(func)
-    result = cached_func(arg)
+    func = mem.cache(func)
 
-    assert result == arg
-
-    out, err = capsys.readouterr()
-    assert out == "executing function\n"
-    assert not err
-
-    # Second call should return the cached result
-    result2 = cached_func(arg)
-
-    assert result2 == arg
-
-    out, err = capsys.readouterr()
-    assert not out
-    assert not err
-
-
-@mark.parametrize("compress", [True, False])
-@mark.parametrize("arg", [array.array('d', [1, 2, 3]),
-                          np.arange(10)])
-def test_store_array_types(capsys, tmpdir, compress, arg):
-    """Test that bytes types can be cached in hdfs store."""
-    def func(arg):
-        """Dummy function."""
-        print("executing function")
-        return arg
-
-    register_hdfs_store_backend()
-
-    mem = Memory(location=tmpdir.strpath[1:],
-                 backend='hdfs', host='localhost', port=8020, user='test',
-                 verbose=0, compress=compress)
-
-    assert mem.store.cachedir == os.path.join(tmpdir.strpath[1:], "joblib")
-
-    cached_func = mem.cache(func)
-    result = cached_func(arg)
-    out, err = capsys.readouterr()
-    assert out == "executing function\n"
-    assert not err
+    # First call executes and persists result
+    result = func(arg)
 
     if isinstance(arg, np.ndarray):
         np.testing.assert_array_equal(arg, result)
     else:
         assert result == arg
 
-    # Second call should return the cached result
-    result2 = cached_func(arg)
+    out, err = capsys.readouterr()
+    assert out == "executing function\n"
+    assert not err
+
+    # Second call returns the cached result
+    result = func(arg)
     if isinstance(arg, np.ndarray):
         np.testing.assert_array_equal(arg, result)
     else:
-        assert result2 == arg
+        assert result == arg
 
-    _, err = capsys.readouterr()
+    out, err = capsys.readouterr()
     assert not out
     assert not err
 
