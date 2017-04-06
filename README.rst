@@ -52,7 +52,7 @@ full support of available store backends : S3 and HDFS.
 
 ..  code-block:: bash
 
-    $ conda create -n joblibstore-env python==3.5 s3fs hdfs3 libhdfs3 -c conda-forge
+    $ conda create -n joblibstore-env python==3.5 s3fs libhdfs3 -c conda-forge
     $ . activate joblibstore-env
 
 2. From the `joblistore-env` environment, use pip to install joblibstore:
@@ -60,7 +60,7 @@ full support of available store backends : S3 and HDFS.
 ..  code-block:: bash
 
     $ cd joblibstore
-    $ pip install -r requirements.txt
+    $ pip install -r requirements.txt .
 
 
 Using joblibstore to cache computation results in the Cloud
