@@ -25,7 +25,7 @@ install:
     - export PATH="$HOME/miniconda/bin:$PATH"
     - conda config --set always_yes yes --set changeps1 no
     - conda update -q conda
-    - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION s3fs hdfs3 libhdfs3 -c conda-forge
+    - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION s3fs libhdfs3 -c conda-forge
     - source activate test-environment
     - pip install -r requirements.txt .
 
