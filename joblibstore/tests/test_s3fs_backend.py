@@ -4,11 +4,13 @@ from __future__ import print_function
 
 import os.path
 import array
+import shutil
 
 import pytest
 import numpy as np
 from s3fs import S3FileSystem
 from joblib import Memory
+from joblib.backports import concurrency_safe_rename
 from joblib.disk import mkdirp, rm_subdirs
 from joblibstore import register_s3fs_store_backend
 
@@ -21,6 +23,11 @@ def s3fs_mock(monkeypatch):
         """Mock open."""
         return open(*args, **kwargs)
 
+    def mock_mv(self, source, dest):
+        """Mock rm."""
+        # pylint: disable=unused-argument
+        concurrency_safe_rename(source, dest)
+
     def mock_exists(self, directory):
         # pylint: disable=unused-argument
         """Mock exists."""
@@ -29,7 +36,10 @@ def s3fs_mock(monkeypatch):
     def mock_rm(self, directory, *args, **kwargs):
         """Mock rm."""
         # pylint: disable=unused-argument
-        rm_subdirs(directory)
+        if os.path.basename(directory) == 'joblib':
+            rm_subdirs(directory)
+        else:
+            shutil.rmtree(directory)
 
     def mock_mkdir(self, directory):
         # pylint: disable=unused-argument
@@ -48,6 +58,7 @@ def s3fs_mock(monkeypatch):
     monkeypatch.setattr(S3FileSystem, "mkdir", mock_mkdir)
     monkeypatch.setattr(S3FileSystem, "rm", mock_rm)
     monkeypatch.setattr(S3FileSystem, "open", mock_open)
+    monkeypatch.setattr(S3FileSystem, "mv", mock_mv)
     monkeypatch.setattr(S3FileSystem, "exists", mock_exists)
 
 
@@ -166,17 +177,17 @@ def test_get_cache_items(tmpdir):
 
     mem = Memory(location=tmpdir.strpath, backend='s3', bucket="test",
                  verbose=0)
-    assert len(mem.store.get_cache_items()) == 0
+    assert not mem.store.get_cache_items()
 
     cached_func = mem.cache(func)
     for arg in ["test1", "test2", "test3"]:
         cached_func(arg)
 
     # get_cache_items always returns an empty list for the moment
-    assert len(mem.store.get_cache_items()) == 0
+    assert not mem.store.get_cache_items()
 
     mem.clear()
-    assert len(mem.store.get_cache_items()) == 0
+    assert not mem.store.get_cache_items()
 
 
 def test_no_bucket_raises_exception(tmpdir):

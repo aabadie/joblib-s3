@@ -9,6 +9,7 @@ class S3FSStoreBackend(StoreBackendBase, StoreManagerMixin):
     """A StoreBackend for S3 cloud storage file system."""
 
     def __init__(self):
+        self.mv = None
         self.storage = None
         self.cachedir = None
         self.compress = False
@@ -50,6 +51,7 @@ class S3FSStoreBackend(StoreBackendBase, StoreManagerMixin):
         # attach required methods using monkey patching trick.
         self.open_object = self.storage.open
         self.object_exists = self.storage.exists
+        self.mv = self.storage.mv
 
         # computation results can be stored compressed for faster I/O
         self.compress = (False if 'compress' not in kwargs

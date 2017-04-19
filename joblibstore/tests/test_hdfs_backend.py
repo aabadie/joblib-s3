@@ -123,7 +123,7 @@ def test_get_cache_items(tmpdir):
     mem = Memory(location=tmpdir.strpath,
                  backend='hdfs', host='localhost', port=8020, user='test',
                  verbose=100, compress=False)
-    assert len(mem.store.get_cache_items()) == 0
+    assert not mem.store.get_cache_items()
 
     cached_func = mem.cache(func)
     for arg in ["test1", "test2", "test3"]:
@@ -133,4 +133,4 @@ def test_get_cache_items(tmpdir):
     assert len(mem.store.get_cache_items()) == 3
 
     mem.clear()
-    assert len(mem.store.get_cache_items()) == 0
+    assert not mem.store.get_cache_items()
