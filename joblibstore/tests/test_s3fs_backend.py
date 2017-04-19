@@ -4,7 +4,6 @@ from __future__ import print_function
 
 import os.path
 import array
-import shutil
 
 import pytest
 import numpy as np
@@ -36,10 +35,7 @@ def s3fs_mock(monkeypatch):
     def mock_rm(self, directory, *args, **kwargs):
         """Mock rm."""
         # pylint: disable=unused-argument
-        if os.path.basename(directory) == 'joblib':
-            rm_subdirs(directory)
-        else:
-            shutil.rmtree(directory)
+        rm_subdirs(directory)
 
     def mock_mkdir(self, directory):
         # pylint: disable=unused-argument
