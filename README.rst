@@ -3,11 +3,11 @@ Joblibstore
 
 |Travis| |Codecov|
 
-.. |Travis| image:: https://travis-ci.org/aabadie/joblibs3.svg?branch=master
-    :target: https://travis-ci.org/aabadie/joblibs3
+.. |Travis| image:: https://travis-ci.org/aabadie/joblib-s3.svg?branch=master
+    :target: https://travis-ci.org/aabadie/joblib-s3
 
-.. |Codecov| image:: https://codecov.io/gh/aabadie/joblibs3/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/aabadie/joblibs3
+.. |Codecov| image:: https://codecov.io/gh/aabadie/joblib-s3/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/aabadie/joblib-s3
 
 This package provides an AWS store backend for the joblib Memory object used
 for fast caching of computation results.
