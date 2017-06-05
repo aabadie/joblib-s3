@@ -33,7 +33,7 @@ Getting the latest code
 
 To get the latest code use git::
 
-    git clone git://github.com/aabadie/joblibs3.git
+    git clone git://github.com/aabadie/joblib-s3.git
 
 Installing joblibs3
 ===================
@@ -42,7 +42,7 @@ Simply use pip:
 
 ..  code-block:: bash
 
-    $ cd joblibs3
+    $ cd joblib-s3
     $ pip install -r requirements.txt .
 
 
