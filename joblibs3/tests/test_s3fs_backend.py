@@ -11,7 +11,7 @@ from s3fs import S3FileSystem
 from joblib import Memory
 from joblib.backports import concurrency_safe_rename
 from joblib.disk import mkdirp, rm_subdirs
-from joblibstore import register_s3fs_store_backend
+from joblibs3 import register_s3fs_store_backend
 
 
 @pytest.fixture(autouse=True)

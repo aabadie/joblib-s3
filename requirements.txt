@@ -1,6 +1,3 @@
-# Needs hdfs3 upstream master branch
--e git+https://github.com/dask/hdfs3.git@master#egg=hdfs3
-
 # Needs joblib specific branch for this project as it's not merged yet.
 # See https://github.com/joblib/pull/397 for more details.
 -e git+https://github.com/aabadie/joblib.git@storage_backend_2#egg=joblib
