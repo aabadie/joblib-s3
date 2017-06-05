@@ -1,8 +1,8 @@
-"""Example showing how to joblib-store to cache results in a S3 store."""
+"""Example showing how to joblib-s3 to cache results in a S3 store."""
 
 import numpy as np
 from joblib import Memory
-from joblibstore import register_s3fs_store_backend
+from joblibs3 import register_s3fs_store_backend
 
 if __name__ == '__main__':
     register_s3fs_store_backend()

@@ -1,5 +1,5 @@
-Joblibstore
-===========
+Joblibs3
+========
 
 |Travis| |Codecov|
 
@@ -56,7 +56,7 @@ See the following example:
     # Import the required packages
     import numpy as np
     from joblib import Memory
-    from joblibstore import register_s3_store_backend
+    from joblibs3 import register_s3_store_backend
 
     if __name__ == '__main__':
         register_s3_store_backend()
