@@ -1,14 +1,2 @@
-# Needs joblib specific branch for this project as it's not merged yet.
-# See https://github.com/joblib/pull/397 for more details.
--e git+https://github.com/aabadie/joblib.git@storage_backend_2#egg=joblib
-
-# Regular dependencies
-numpy
-
-# For tests
-pytest
-pytest-cov
-pytest-pep8
-pytest-pylint
-codecov
-tox
+# Needs joblib master branch
+-e git+https://github.com/joblib/joblib.git
