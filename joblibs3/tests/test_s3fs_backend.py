@@ -75,10 +75,12 @@ def test_store_standard_types(capsys, tmpdir, compress, arg):
     register_s3fs_store_backend()
 
     mem = Memory(location=tmpdir.strpath,
-                 backend='s3', bucket="test",
-                 verbose=0, compress=compress)
+                 backend='s3', verbose=0, compress=compress,
+                 store_options=dict(bucket="test"))
 
-    assert mem.store.cachedir == os.path.join("s3:/", tmpdir.strpath, "joblib")
+    assert mem.store_backend._location == os.path.join("s3:/",
+                                                       tmpdir.strpath,
+                                                       "joblib")
 
     cached_func = mem.cache(func)
     result = cached_func(arg)
@@ -110,10 +112,12 @@ def test_store_np_array(capsys, tmpdir, compress):
     register_s3fs_store_backend()
 
     mem = Memory(location=tmpdir.strpath,
-                 backend='s3', bucket="test",
-                 verbose=0, compress=compress)
+                 backend='s3', verbose=0, compress=compress,
+                 store_options=dict(bucket="test"))
 
-    assert mem.store.cachedir == os.path.join("s3:/", tmpdir.strpath, "joblib")
+    assert mem.store_backend._location == os.path.join("s3:/",
+                                                       tmpdir.strpath,
+                                                       "joblib")
 
     arg = np.arange(100)
     cached_func = mem.cache(func)
@@ -144,8 +148,8 @@ def test_clear_cache(capsys, tmpdir):
 
     register_s3fs_store_backend()
 
-    mem = Memory(location=tmpdir.strpath, backend='s3', bucket="test",
-                 verbose=0)
+    mem = Memory(location=tmpdir.strpath,
+                 backend='s3', verbose=0, store_options=dict(bucket="test"))
     cached_func = mem.cache(func)
     cached_func("test")
 
@@ -159,11 +163,11 @@ def test_clear_cache(capsys, tmpdir):
     assert out == "executing function\n"
 
     mem.clear()
-    print(mem.store.cachedir)
-    assert not os.listdir(mem.store.cachedir)
+    print(mem.store_backend._location)
+    assert not os.listdir(mem.store_backend._location)
 
 
-def test_get_cache_items(tmpdir):
+def test_get_items(tmpdir):
     """Test cache items listing."""
     def func(arg):
         """Dummy function."""
@@ -171,19 +175,19 @@ def test_get_cache_items(tmpdir):
 
     register_s3fs_store_backend()
 
-    mem = Memory(location=tmpdir.strpath, backend='s3', bucket="test",
-                 verbose=0)
-    assert not mem.store.get_cache_items()
+    mem = Memory(location=tmpdir.strpath,
+                 backend='s3', verbose=0, store_options=dict(bucket="test"))
+    assert not mem.store_backend.get_items()
 
     cached_func = mem.cache(func)
     for arg in ["test1", "test2", "test3"]:
         cached_func(arg)
 
-    # get_cache_items always returns an empty list for the moment
-    assert not mem.store.get_cache_items()
+    # get_items always returns an empty list for the moment
+    assert not mem.store_backend.get_items()
 
     mem.clear()
-    assert not mem.store.get_cache_items()
+    assert not mem.store_backend.get_items()
 
 
 def test_no_bucket_raises_exception(tmpdir):

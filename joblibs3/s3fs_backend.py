@@ -2,18 +2,20 @@
 
 import os.path
 import s3fs
-from joblib._store_backends import StoreBackendBase, StoreManagerMixin
+from joblib._store_backends import StoreBackendBase, StoreBackendMixin
 
 
-class S3FSStoreBackend(StoreBackendBase, StoreManagerMixin):
+class S3FSStoreBackend(StoreBackendBase, StoreBackendMixin):
     """A StoreBackend for S3 cloud storage file system."""
 
-    def __init__(self):
-        self.mv = None
-        self.storage = None
-        self.cachedir = None
-        self.compress = False
-        self.mmap_mode = None
+    def _open_item(self, fd, mode):
+        return self.storage.open(fd, mode)
+
+    def _item_exists(self, path):
+        return self.storage.exists(path)
+
+    def _move_item(self, src, dst):
+        self.storage.mv(src, dst)
 
     def clear_location(self, location):
         """Check if object exists in store."""
@@ -23,19 +25,46 @@ class S3FSStoreBackend(StoreBackendBase, StoreManagerMixin):
         """Create object location on store."""
         self._mkdirp(location)
 
-    def get_cache_items(self):
+    def get_items(self):
         """Return the whole list of items available in cache."""
         return []
 
-    def configure(self, location, bucket=None,
-                  anon=False, key=None, secret=None, token=None, use_ssl=True,
-                  **kwargs):
-        """Configure the store backend."""
-        self.storage = s3fs.S3FileSystem(anon=anon, key=key, secret=secret,
-                                         token=token, use_ssl=use_ssl)
+    def _prepare_options(self, store_options):
+        if 'anon' not in store_options:
+            store_options['anon'] = False
 
-        if bucket is None:
+        if 'key' not in store_options:
+            store_options['key'] = None
+
+        if 'secret' not in store_options:
+            store_options['secret'] = None
+
+        if 'token' not in store_options:
+            store_options['token'] = None
+
+        if 'use_ssl' not in store_options:
+            store_options['use_ssl'] = True
+
+        return store_options
+
+    def configure(self, location, verbose=0,
+                  store_options=dict(compress=False, bucket=None,
+                                     anon=False, key=None, secret=None,
+                                     token=None, use_ssl=True)):
+        """Configure the store backend."""
+        compress = store_options['compress']
+        store_options = self._prepare_options(store_options)
+
+        self.storage = s3fs.S3FileSystem(anon=store_options['anon'],
+                                         key=store_options['key'],
+                                         secret=store_options['secret'],
+                                         token=store_options['token'],
+                                         use_ssl=store_options['use_ssl'])
+
+        if 'bucket' not in store_options:
             raise ValueError("No valid S3 bucket set")
+
+        bucket = store_options['bucket']
 
         # Ensure the given bucket exists.
         root_bucket = os.path.join("s3://", bucket)
@@ -44,18 +73,12 @@ class S3FSStoreBackend(StoreBackendBase, StoreManagerMixin):
 
         if location.startswith('/'):
             location.replace('/', '')
-        self.cachedir = os.path.join(root_bucket, location, 'joblib')
-        if not self.storage.exists(self.cachedir):
-            self.storage.mkdir(self.cachedir)
-
-        # attach required methods using monkey patching trick.
-        self.open_object = self.storage.open
-        self.object_exists = self.storage.exists
-        self.mv = self.storage.mv
+        self._location = os.path.join(root_bucket, location)
+        if not self.storage.exists(self._location):
+            self.storage.mkdir(self._location)
 
         # computation results can be stored compressed for faster I/O
-        self.compress = (False if 'compress' not in kwargs
-                         else kwargs['compress'])
+        self.compress = compress
 
         # Memory map mode is not supported
         self.mmap_mode = None
@@ -64,10 +87,10 @@ class S3FSStoreBackend(StoreBackendBase, StoreManagerMixin):
         """Create recursively a directory on the S3 store."""
         # remove root cachedir from input directory to create as it should
         # have already been created in the configure function.
-        if directory.startswith(self.cachedir):
-            directory = directory.replace(self.cachedir + '/', "")
+        if directory.startswith(self._location):
+            directory = directory.replace(self._location + '/', "")
 
-        current_path = self.cachedir
+        current_path = self._location
         for sub_dir in directory.split('/'):
             current_path = os.path.join(current_path, sub_dir)
             self.storage.mkdir(current_path)
