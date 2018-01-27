@@ -4,6 +4,9 @@ import os.path
 import s3fs
 from joblib._store_backends import StoreBackendBase, StoreBackendMixin
 
+DEFAULT_BACKEND_OPTIONS = dict(compress=False, bucket=None, anon=False,
+                               key=None, secret=None, token=None, use_ssl=True)
+
 
 class S3FSStoreBackend(StoreBackendBase, StoreBackendMixin):
     """A StoreBackend for S3 cloud storage file system."""
@@ -29,42 +32,29 @@ class S3FSStoreBackend(StoreBackendBase, StoreBackendMixin):
         """Return the whole list of items available in cache."""
         return []
 
-    def _prepare_options(self, store_options):
-        if 'anon' not in store_options:
-            store_options['anon'] = False
+    def _check_options(self, options):
+        for k, v in DEFAULT_BACKEND_OPTIONS.items():
+            if k not in options:
+                options[k] = v
 
-        if 'key' not in store_options:
-            store_options['key'] = None
-
-        if 'secret' not in store_options:
-            store_options['secret'] = None
-
-        if 'token' not in store_options:
-            store_options['token'] = None
-
-        if 'use_ssl' not in store_options:
-            store_options['use_ssl'] = True
-
-        return store_options
+        return options
 
     def configure(self, location, verbose=0,
-                  backend_options=dict(compress=False, bucket=None,
-                                       anon=False, key=None, secret=None,
-                                       token=None, use_ssl=True)):
+                  backend_options=DEFAULT_BACKEND_OPTIONS):
         """Configure the store backend."""
         compress = backend_options['compress']
-        store_options = self._prepare_options(backend_options)
+        options = self._check_options(backend_options)
 
-        self.storage = s3fs.S3FileSystem(anon=backend_options['anon'],
-                                         key=backend_options['key'],
-                                         secret=backend_options['secret'],
-                                         token=backend_options['token'],
-                                         use_ssl=backend_options['use_ssl'])
+        self.storage = s3fs.S3FileSystem(anon=options['anon'],
+                                         key=options['key'],
+                                         secret=options['secret'],
+                                         token=options['token'],
+                                         use_ssl=options['use_ssl'])
 
-        if 'bucket' not in backend_options:
+        if options['bucket'] is None:
             raise ValueError("No valid S3 bucket set")
 
-        bucket = backend_options['bucket']
+        bucket = options['bucket']
 
         # Ensure the given bucket exists.
         root_bucket = os.path.join("s3://", bucket)
