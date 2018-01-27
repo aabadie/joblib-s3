@@ -64,7 +64,7 @@ See the following example:
         # we assume you S3 credentials are stored in ~/.aws/credentials, so no
         # need to pass them to Memory constructor.
         mem = Memory('joblib_cache', backend='s3', verbose=100, compress=True,
-                     store_options=dict(bucket="joblib-example"))
+                     backend_options=dict(bucket="joblib-example"))
 
         multiply = mem.cache(np.multiply)
         array1 = np.arange(10000)
