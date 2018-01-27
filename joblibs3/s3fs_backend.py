@@ -48,23 +48,23 @@ class S3FSStoreBackend(StoreBackendBase, StoreBackendMixin):
         return store_options
 
     def configure(self, location, verbose=0,
-                  store_options=dict(compress=False, bucket=None,
-                                     anon=False, key=None, secret=None,
-                                     token=None, use_ssl=True)):
+                  backend_options=dict(compress=False, bucket=None,
+                                       anon=False, key=None, secret=None,
+                                       token=None, use_ssl=True)):
         """Configure the store backend."""
-        compress = store_options['compress']
-        store_options = self._prepare_options(store_options)
+        compress = backend_options['compress']
+        store_options = self._prepare_options(backend_options)
 
-        self.storage = s3fs.S3FileSystem(anon=store_options['anon'],
-                                         key=store_options['key'],
-                                         secret=store_options['secret'],
-                                         token=store_options['token'],
-                                         use_ssl=store_options['use_ssl'])
+        self.storage = s3fs.S3FileSystem(anon=backend_options['anon'],
+                                         key=backend_options['key'],
+                                         secret=backend_options['secret'],
+                                         token=backend_options['token'],
+                                         use_ssl=backend_options['use_ssl'])
 
-        if 'bucket' not in store_options:
+        if 'bucket' not in backend_options:
             raise ValueError("No valid S3 bucket set")
 
-        bucket = store_options['bucket']
+        bucket = backend_options['bucket']
 
         # Ensure the given bucket exists.
         root_bucket = os.path.join("s3://", bucket)
@@ -73,9 +73,9 @@ class S3FSStoreBackend(StoreBackendBase, StoreBackendMixin):
 
         if location.startswith('/'):
             location.replace('/', '')
-        self._location = os.path.join(root_bucket, location)
-        if not self.storage.exists(self._location):
-            self.storage.mkdir(self._location)
+        self.location = os.path.join(root_bucket, location)
+        if not self.storage.exists(self.location):
+            self.storage.mkdir(self.location)
 
         # computation results can be stored compressed for faster I/O
         self.compress = compress
@@ -87,10 +87,10 @@ class S3FSStoreBackend(StoreBackendBase, StoreBackendMixin):
         """Create recursively a directory on the S3 store."""
         # remove root cachedir from input directory to create as it should
         # have already been created in the configure function.
-        if directory.startswith(self._location):
-            directory = directory.replace(self._location + '/', "")
+        if directory.startswith(self.location):
+            directory = directory.replace(self.location + '/', "")
 
-        current_path = self._location
+        current_path = self.location
         for sub_dir in directory.split('/'):
             current_path = os.path.join(current_path, sub_dir)
             self.storage.mkdir(current_path)
