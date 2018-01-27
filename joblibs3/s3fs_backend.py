@@ -43,7 +43,7 @@ class S3FSStoreBackend(StoreBackendBase, StoreBackendMixin):
                   backend_options=DEFAULT_BACKEND_OPTIONS):
         """Configure the store backend."""
         compress = backend_options['compress']
-        options = self._check_options(backend_options)
+        options = self._check_options(backend_options.copy())
 
         self.storage = s3fs.S3FileSystem(anon=options['anon'],
                                          key=options['key'],
