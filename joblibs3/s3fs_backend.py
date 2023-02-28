@@ -8,11 +8,13 @@ import s3fs
 from joblib._store_backends import StoreBackendBase, StoreBackendMixin
 
 inspect_s3fs = dict(getfullargspec(s3fs.S3FileSystem.__init__)._asdict())
+# Keep compress=False for backwards compatibility
 DEFAULT_BACKEND_OPTIONS = dict(
     zip(
         inspect_s3fs['args'][1:],
         inspect_s3fs['defaults']
-    )
+    ),
+    compress=False,
 )
 del inspect_s3fs
 
