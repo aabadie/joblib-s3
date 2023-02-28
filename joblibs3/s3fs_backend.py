@@ -1,11 +1,20 @@
 """Joblib storage backend for S3."""
 
 import os.path
+
+from inspect import getfullargspec
+
 import s3fs
 from joblib._store_backends import StoreBackendBase, StoreBackendMixin
 
-DEFAULT_BACKEND_OPTIONS = dict(compress=False, bucket=None, anon=False,
-                               key=None, secret=None, token=None, use_ssl=True)
+inspect_s3fs = dict(getfullargspec(s3fs.S3FileSystem.__init__)._asdict())
+DEFAULT_BACKEND_OPTIONS = dict(
+    zip(
+        inspect_s3fs['args'][1:],
+        inspect_s3fs['defaults']
+    )
+)
+del inspect_s3fs
 
 
 class S3FSStoreBackend(StoreBackendBase, StoreBackendMixin):
@@ -45,11 +54,7 @@ class S3FSStoreBackend(StoreBackendBase, StoreBackendMixin):
         compress = backend_options['compress']
         options = self._check_options(backend_options.copy())
 
-        self.storage = s3fs.S3FileSystem(anon=options['anon'],
-                                         key=options['key'],
-                                         secret=options['secret'],
-                                         token=options['token'],
-                                         use_ssl=options['use_ssl'])
+        self.storage = s3fs.S3FileSystem(**options)
 
         if options['bucket'] is None:
             raise ValueError("No valid S3 bucket set")
