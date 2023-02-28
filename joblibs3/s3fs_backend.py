@@ -15,6 +15,7 @@ DEFAULT_BACKEND_OPTIONS = dict(
         inspect_s3fs['defaults']
     ),
     compress=False,
+    bucket=None,
 )
 del inspect_s3fs
 
