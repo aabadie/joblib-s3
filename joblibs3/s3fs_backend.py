@@ -12,7 +12,10 @@ DEFAULT_BACKEND_OPTIONS = dict(
     zip(
         inspect_s3fs['args'][1:],
         inspect_s3fs['defaults']
-    )
+    ),
+    # https://github.com/fsspec/s3fs/blob/0dfb5893ed9dc82a11bb5ce498c1ccc25cec8235/s3fs/core.py#L236
+    # Allow for authentication via aws config profile.
+    profile=None,
 )
 del inspect_s3fs
 
