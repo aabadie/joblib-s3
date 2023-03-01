@@ -13,9 +13,6 @@ DEFAULT_BACKEND_OPTIONS = dict(
         inspect_s3fs['args'][1:],
         inspect_s3fs['defaults']
     ),
-    # https://github.com/fsspec/s3fs/blob/0dfb5893ed9dc82a11bb5ce498c1ccc25cec8235/s3fs/core.py#L236
-    # Allow for authentication via aws config profile.
-    profile=None,
 )
 del inspect_s3fs
 
@@ -76,6 +73,9 @@ class S3FSStoreBackend(StoreBackendBase, StoreBackendMixin):
         self.location = os.path.join(root_bucket, location)
         if not self.storage.exists(self.location):
             self.storage.mkdir(self.location)
+
+        # Memory map mode is not supported
+        self.mmap_mode = None
 
     def _mkdirp(self, directory):
         """Create recursively a directory on the S3 store."""
