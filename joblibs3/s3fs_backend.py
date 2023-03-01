@@ -77,9 +77,6 @@ class S3FSStoreBackend(StoreBackendBase, StoreBackendMixin):
         if not self.storage.exists(self.location):
             self.storage.mkdir(self.location)
 
-        # Memory map mode is not supported
-        self.mmap_mode = None
-
     def _mkdirp(self, directory):
         """Create recursively a directory on the S3 store."""
         # remove root cachedir from input directory to create as it should
