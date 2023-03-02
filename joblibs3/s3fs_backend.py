@@ -51,9 +51,8 @@ class S3FSStoreBackend(StoreBackendBase, StoreBackendMixin):
     def configure(self, location, verbose=0,
                   backend_options=DEFAULT_BACKEND_OPTIONS):
         """Configure the store backend."""
-        compress = backend_options.pop('compress', False)
         # computation results can be stored compressed for faster I/O
-        self.compress = compress
+        self.compress = backend_options.pop('compress', False)
 
         bucket = backend_options.pop('bucket', None)
         if bucket is None:
