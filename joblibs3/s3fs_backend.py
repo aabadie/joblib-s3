@@ -1,11 +1,20 @@
 """Joblib storage backend for S3."""
 
 import os.path
+
+from inspect import getfullargspec
+
 import s3fs
 from joblib._store_backends import StoreBackendBase, StoreBackendMixin
 
-DEFAULT_BACKEND_OPTIONS = dict(compress=False, bucket=None, anon=False,
-                               key=None, secret=None, token=None, use_ssl=True)
+inspect_s3fs = dict(getfullargspec(s3fs.S3FileSystem.__init__)._asdict())
+DEFAULT_BACKEND_OPTIONS = dict(
+    zip(
+        inspect_s3fs['args'][1:],
+        inspect_s3fs['defaults']
+    ),
+)
+del inspect_s3fs
 
 
 class S3FSStoreBackend(StoreBackendBase, StoreBackendMixin):
@@ -42,19 +51,16 @@ class S3FSStoreBackend(StoreBackendBase, StoreBackendMixin):
     def configure(self, location, verbose=0,
                   backend_options=DEFAULT_BACKEND_OPTIONS):
         """Configure the store backend."""
-        compress = backend_options['compress']
-        options = self._check_options(backend_options.copy())
+        # computation results can be stored compressed for faster I/O
+        self.compress = backend_options.pop('compress', False)
 
-        self.storage = s3fs.S3FileSystem(anon=options['anon'],
-                                         key=options['key'],
-                                         secret=options['secret'],
-                                         token=options['token'],
-                                         use_ssl=options['use_ssl'])
-
-        if options['bucket'] is None:
+        bucket = backend_options.pop('bucket', None)
+        if bucket is None:
             raise ValueError("No valid S3 bucket set")
 
-        bucket = options['bucket']
+        options = self._check_options(backend_options.copy())
+
+        self.storage = s3fs.S3FileSystem(**options)
 
         # Ensure the given bucket exists.
         root_bucket = os.path.join("s3://", bucket)
@@ -66,9 +72,6 @@ class S3FSStoreBackend(StoreBackendBase, StoreBackendMixin):
         self.location = os.path.join(root_bucket, location)
         if not self.storage.exists(self.location):
             self.storage.mkdir(self.location)
-
-        # computation results can be stored compressed for faster I/O
-        self.compress = compress
 
         # Memory map mode is not supported
         self.mmap_mode = None

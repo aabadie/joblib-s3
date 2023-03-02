@@ -56,15 +56,22 @@ See the following example:
     # Import the required packages
     import numpy as np
     from joblib import Memory
-    from joblibs3 import register_s3_store_backend
+    from joblibs3 import register_s3fs_store_backend
+    # Optionally, instantiate a session to use AWS_PROFILE from ~/.aws/config
+    # from aiobotocore.session import AioSession
 
     if __name__ == '__main__':
-        register_s3_store_backend()
+        register_s3fs_store_backend()
 
         # we assume you S3 credentials are stored in ~/.aws/credentials, so no
         # need to pass them to Memory constructor.
+        backend_options = dict(
+            bucket='joblib-example',
+            # Optional
+            #session=AioSession(profile='my-profile'),
+        )
         mem = Memory('joblib_cache', backend='s3', verbose=100, compress=True,
-                     backend_options=dict(bucket="joblib-example"))
+                     backend_options=backend_options)
 
         multiply = mem.cache(np.multiply)
         array1 = np.arange(10000)
