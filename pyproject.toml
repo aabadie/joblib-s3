@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "joblib-s3"
+dynamic = ["version"]
+description = "Provides AWS S3 store backend for joblib cache"
+readme = "README.rst"
+authors = [{ name = "Alexandre Abadie", email = "alexandre.abadie@inria.fr" }]
+license = { text = "BSD" }
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+keywords = ["joblib", "aws", "s3", "cache"]
+dependencies = ["joblib>=0.10", "s3fs>=0.0.7"]
+requires-python = ">=3.7"
+
+[project.urls]
+Homepage = "https://github.com/aabadie/joblib-s3"
+Repository = "https://github.com/aabadie/joblib-s3.git"
+Issues = "https://github.com/aabadie/joblib-s3/issues"
+
+[tool.setuptools_scm]
+local_scheme = 'no-local-version'
+version_scheme = "post-release"
+
+[tool.setuptools.dynamic]
+version = { attr = "setuptools_scm.get_version" }
