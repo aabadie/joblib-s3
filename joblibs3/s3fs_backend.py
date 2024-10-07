@@ -1,7 +1,6 @@
 """Joblib storage backend for S3."""
 
 import os.path
-
 from inspect import getfullargspec
 
 import s3fs
@@ -9,10 +8,7 @@ from joblib._store_backends import StoreBackendBase, StoreBackendMixin
 
 inspect_s3fs = dict(getfullargspec(s3fs.S3FileSystem.__init__)._asdict())
 DEFAULT_BACKEND_OPTIONS = dict(
-    zip(
-        inspect_s3fs['args'][1:],
-        inspect_s3fs['defaults']
-    ),
+    zip(inspect_s3fs["args"][1:], inspect_s3fs["defaults"]),
 )
 del inspect_s3fs
 
@@ -48,13 +44,12 @@ class S3FSStoreBackend(StoreBackendBase, StoreBackendMixin):
 
         return options
 
-    def configure(self, location, verbose=0,
-                  backend_options=DEFAULT_BACKEND_OPTIONS):
+    def configure(self, location, verbose=0, backend_options=DEFAULT_BACKEND_OPTIONS):
         """Configure the store backend."""
         # computation results can be stored compressed for faster I/O
-        self.compress = backend_options.pop('compress', False)
+        self.compress = backend_options.pop("compress", False)
 
-        bucket = backend_options.pop('bucket', None)
+        bucket = backend_options.pop("bucket", None)
         if bucket is None:
             raise ValueError("No valid S3 bucket set")
 
@@ -67,8 +62,8 @@ class S3FSStoreBackend(StoreBackendBase, StoreBackendMixin):
         if not self.storage.exists(root_bucket):
             self.storage.mkdir(root_bucket)
 
-        if location.startswith('/'):
-            location.replace('/', '')
+        if location.startswith("/"):
+            location.replace("/", "")
         self.location = os.path.join(root_bucket, location)
         if not self.storage.exists(self.location):
             self.storage.mkdir(self.location)
@@ -81,9 +76,9 @@ class S3FSStoreBackend(StoreBackendBase, StoreBackendMixin):
         # remove root cachedir from input directory to create as it should
         # have already been created in the configure function.
         if directory.startswith(self.location):
-            directory = directory.replace(self.location + '/', "")
+            directory = directory.replace(self.location + "/", "")
 
         current_path = self.location
-        for sub_dir in directory.split('/'):
+        for sub_dir in directory.split("/"):
             current_path = os.path.join(current_path, sub_dir)
             self.storage.mkdir(current_path)

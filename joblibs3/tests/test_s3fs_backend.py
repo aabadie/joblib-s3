@@ -1,22 +1,22 @@
 """Test S3FS store backend."""
 
-from __future__ import print_function
-
-import os.path
 import array
+import os.path
 
-import pytest
 import numpy as np
-from s3fs import S3FileSystem
+import pytest
 from joblib import Memory
 from joblib.backports import concurrency_safe_rename
 from joblib.disk import mkdirp, rm_subdirs
+from s3fs import S3FileSystem
+
 from joblibs3 import register_s3fs_store_backend
 
 
 @pytest.fixture(autouse=True)
 def s3fs_mock(monkeypatch):
     """Mock fixture for S3FileSystem."""
+
     def mock_open(self, *args, **kwargs):
         # pylint: disable=unused-argument
         """Mock open."""
@@ -59,14 +59,20 @@ def s3fs_mock(monkeypatch):
 
 
 @pytest.mark.parametrize("compress", [True, False])
-@pytest.mark.parametrize("arg", ["test",
-                                 b"test",
-                                 array.array('d', [1, 2, 3, 4]),
-                                 (1, 2, 3),
-                                 {"1": 1, "2": 2},
-                                 [1, 2, 3, 4]])
+@pytest.mark.parametrize(
+    "arg",
+    [
+        "test",
+        b"test",
+        array.array("d", [1, 2, 3, 4]),
+        (1, 2, 3),
+        {"1": 1, "2": 2},
+        [1, 2, 3, 4],
+    ],
+)
 def test_store_standard_types(capsys, tmpdir, compress, arg):
     """Test that standard types can be cached in s3fs store."""
+
     def func(arg):
         """Dummy function."""
         print("executing function")
@@ -74,13 +80,15 @@ def test_store_standard_types(capsys, tmpdir, compress, arg):
 
     register_s3fs_store_backend()
 
-    mem = Memory(location=tmpdir.strpath,
-                 backend='s3', verbose=0, compress=compress,
-                 backend_options=dict(bucket="test"))
+    mem = Memory(
+        location=tmpdir.strpath,
+        backend="s3",
+        verbose=0,
+        compress=compress,
+        backend_options=dict(bucket="test"),
+    )
 
-    assert mem.store_backend.location == os.path.join("s3:/",
-                                                      tmpdir.strpath,
-                                                      "joblib")
+    assert mem.store_backend.location == os.path.join("s3:/", tmpdir.strpath, "joblib")
 
     cached_func = mem.cache(func)
     result = cached_func(arg)
@@ -104,6 +112,7 @@ def test_store_standard_types(capsys, tmpdir, compress, arg):
 @pytest.mark.parametrize("compress", [True, False])
 def test_store_np_array(capsys, tmpdir, compress):
     """Test that any types can be cached in s3fs store."""
+
     def func(arg):
         """Dummy function."""
         print("executing function")
@@ -111,13 +120,15 @@ def test_store_np_array(capsys, tmpdir, compress):
 
     register_s3fs_store_backend()
 
-    mem = Memory(location=tmpdir.strpath,
-                 backend='s3', verbose=0, compress=compress,
-                 backend_options=dict(bucket="test"))
+    mem = Memory(
+        location=tmpdir.strpath,
+        backend="s3",
+        verbose=0,
+        compress=compress,
+        backend_options=dict(bucket="test"),
+    )
 
-    assert mem.store_backend.location == os.path.join("s3:/",
-                                                      tmpdir.strpath,
-                                                      "joblib")
+    assert mem.store_backend.location == os.path.join("s3:/", tmpdir.strpath, "joblib")
 
     arg = np.arange(100)
     cached_func = mem.cache(func)
@@ -141,6 +152,7 @@ def test_store_np_array(capsys, tmpdir, compress):
 
 def test_clear_cache(capsys, tmpdir):
     """Check clearing the cache."""
+
     def func(arg):
         """Dummy function."""
         print("executing function")
@@ -148,8 +160,12 @@ def test_clear_cache(capsys, tmpdir):
 
     register_s3fs_store_backend()
 
-    mem = Memory(location=tmpdir.strpath,
-                 backend='s3', verbose=0, backend_options=dict(bucket="test"))
+    mem = Memory(
+        location=tmpdir.strpath,
+        backend="s3",
+        verbose=0,
+        backend_options=dict(bucket="test"),
+    )
     cached_func = mem.cache(func)
     cached_func("test")
 
@@ -169,14 +185,19 @@ def test_clear_cache(capsys, tmpdir):
 
 def test_get_items(tmpdir):
     """Test cache items listing."""
+
     def func(arg):
         """Dummy function."""
         return arg
 
     register_s3fs_store_backend()
 
-    mem = Memory(location=tmpdir.strpath,
-                 backend='s3', verbose=0, backend_options=dict(bucket="test"))
+    mem = Memory(
+        location=tmpdir.strpath,
+        backend="s3",
+        verbose=0,
+        backend_options=dict(bucket="test"),
+    )
     assert not mem.store_backend.get_items()
 
     cached_func = mem.cache(func)
@@ -194,5 +215,5 @@ def test_no_bucket_raises_exception(tmpdir):
     """Check correct exception is set when no bucket is set."""
 
     with pytest.raises(ValueError) as excinfo:
-        Memory(location=tmpdir.strpath, backend='s3', verbose=0)
+        Memory(location=tmpdir.strpath, backend="s3", verbose=0)
     excinfo.match("No valid S3 bucket set")

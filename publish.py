@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-import os
-import sys
 import subprocess
+import sys
+
 
 def run_command(command):
     process = subprocess.run(command, shell=True, check=True)
     return process.returncode
+
 
 def main():
     if len(sys.argv) != 2:
@@ -14,15 +15,15 @@ def main():
         sys.exit(1)
 
     version = sys.argv[1]
-    if not version.startswith('v'):
-        version = f'v{version}'
+    if not version.startswith("v"):
+        version = f"v{version}"
 
     commands = [
-        f'git tag {version}',
-        f'git push origin {version}',
-        'rm -rf dist/ build/ *.egg-info',
-        'python -m build',
-        'python -m twine upload dist/*'
+        f"git tag {version}",
+        f"git push origin {version}",
+        "rm -rf dist/ build/ *.egg-info",
+        "python -m build",
+        "python -m twine upload dist/*",
     ]
 
     for command in commands:
@@ -35,6 +36,7 @@ def main():
             sys.exit(1)
 
     print(f"Successfully published version {version}")
+
 
 if __name__ == "__main__":
     main()

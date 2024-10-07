@@ -1,8 +1,9 @@
 """Test the backend registration functions"""
 
+from joblib.memory import _STORE_BACKENDS
+
 from joblibs3 import register_s3fs_store_backend
 from joblibs3.s3fs_backend import S3FSStoreBackend
-from joblib.memory import _STORE_BACKENDS
 
 
 def test_s3fs_store_backend_registration():

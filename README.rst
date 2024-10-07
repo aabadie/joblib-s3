@@ -81,3 +81,11 @@ See the following example:
         print(result)
 
 This example is available in the `examples <examples>`_ directory.
+
+Developping
+===========
+
+Tests can be run using `Tox <https://tox.wiki>`_.
+`pre-commit <https://pre-commit.com/>`_ is used to perform usual sanity checks
+(black, isort, ruff, etc).
+
