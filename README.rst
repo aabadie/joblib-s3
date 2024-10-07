@@ -1,10 +1,10 @@
 Joblibs3
 ========
 
-|Travis| |Codecov|
+|CI| |Codecov|
 
-.. |Travis| image:: https://travis-ci.org/aabadie/joblib-s3.svg?branch=master
-    :target: https://travis-ci.org/aabadie/joblib-s3
+.. |CI| image:: https://github.com/aabadie/joblib-s3/workflows/CI/badge.svg
+    :target: https://github.com/aabadie/joblib-s3/actions?query=workflow%3ACI+branch%3Amain
 
 .. |Codecov| image:: https://codecov.io/gh/aabadie/joblib-s3/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/aabadie/joblib-s3
