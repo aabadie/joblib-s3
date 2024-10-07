@@ -88,4 +88,3 @@ Developping
 Tests can be run using `Tox <https://tox.wiki>`_.
 `pre-commit <https://pre-commit.com/>`_ is used to perform usual sanity checks
 (black, isort, ruff, etc).
-
